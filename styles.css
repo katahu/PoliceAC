@@ -1,0 +1,39 @@
+.btn-cs.btn {
+	padding: 1px 5px;
+	outline: none !important;
+}
+.custom-input {
+	width: 100px;
+}
+.custom-input::placeholder {
+	font-size: 10px;
+}
+
+.custom-tooltip {
+	position: absolute;
+	font-size: 12px;
+	background-color: #eee;
+	border: 1px solid #bbbbbb;
+	box-shadow: 0 0 4px 1px #bdc6d4;
+	border-radius: 5px;
+	padding: 5px;
+	display: none;
+}
+
+.main {
+	position: fixed;
+	display: flex;
+	top: 5px;
+	right: 20px;
+	align-items: baseline;
+	gap: 10px;
+	z-index: 9999;
+}
+.custom-main {
+	position: absolute;
+	display: flex;
+	gap: 10px;
+	top: 10px;
+	left: 600px;
+	z-index: 9999;
+}
