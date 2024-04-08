@@ -8,18 +8,6 @@
 .custom-input::placeholder {
 	font-size: 10px;
 }
-
-.custom-tooltip {
-	position: absolute;
-	font-size: 12px;
-	background-color: #eee;
-	border: 1px solid #bbbbbb;
-	box-shadow: 0 0 4px 1px #bdc6d4;
-	border-radius: 5px;
-	padding: 5px;
-	display: none;
-}
-
 .main {
 	position: fixed;
 	display: flex;
@@ -30,10 +18,31 @@
 	z-index: 9999;
 }
 .custom-main {
-	position: absolute;
-	display: flex;
 	gap: 10px;
-	top: 10px;
-	left: 600px;
+	margin-top: 3px;
 	z-index: 9999;
+}
+
+
+.tooltips {
+  position: relative;
+  top: 5px;
+  left: 0;
+  font-size: 10px;
+  background-color: #eee;
+  border: 1px solid #bbbbbb;
+  box-shadow: 0 0 4px 1px #bdc6d4;
+  border-radius: 5px;
+  padding: 3px;
+}
+
+.tooltips::after {
+  content: "";
+  position: absolute;
+  top: -10px; 
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #eee transparent; 
 }
