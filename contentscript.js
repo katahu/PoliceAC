@@ -426,13 +426,13 @@ function Tooltip() {
 		attributeFilter: ['data-bind'],
 	})
 
-	// Fill tooltips object for arrMemoTM
+
 	arrMemoTM.forEach((item) => {
 		const [key, ...rest] = item.split(' - ')
 		tooltips[key] = rest.join(' - ')
 	})
 
-	// Fill tooltips object for arrBall
+
 	arrBall.forEach((ballArray) => {
 		ballArray.forEach((item) => {
 			const [key, value] = item.split(' - ')
