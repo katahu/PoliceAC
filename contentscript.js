@@ -361,7 +361,9 @@ function Tooltip() {
 			///
 		],
 	]
-	const tooltips = {}
+	const tooltipsMemoTM = {} 
+
+	const tooltipsBall = {} 
 
 	function createTooltip(node, text) {
 		let tooltipDiv = node.querySelector('.tooltips')
@@ -387,7 +389,7 @@ function Tooltip() {
 							const memoText = memoElement.textContent.trim()
 							if (titleText === 'Тренировочная Машина') {
 								const [key, ...rest] = memoText.split(' - ')
-								const tooltipText = tooltips[key]
+								const tooltipText = tooltipsMemoTM[key]
 								if (tooltipText) {
 									createTooltip(node, tooltipText)
 								}
@@ -406,7 +408,7 @@ function Tooltip() {
 								}
 							} else if (titleText === 'Монстробол') {
 								const [key, ...rest] = memoText.split(' - ')
-								const tooltipText = tooltips[key]
+								const tooltipText = tooltipsBall[key]
 								if (tooltipText) {
 									createTooltip(node, tooltipText)
 								}
@@ -426,17 +428,15 @@ function Tooltip() {
 		attributeFilter: ['data-bind'],
 	})
 
-
 	arrMemoTM.forEach((item) => {
 		const [key, ...rest] = item.split(' - ')
-		tooltips[key] = rest.join(' - ')
+		tooltipsMemoTM[key] = rest.join(' - ')
 	})
-
 
 	arrBall.forEach((ballArray) => {
 		ballArray.forEach((item) => {
 			const [key, value] = item.split(' - ')
-			tooltips[key] = value
+			tooltipsBall[key] = value
 		})
 	})
 }

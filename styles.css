@@ -34,6 +34,7 @@
   box-shadow: 0 0 4px 1px #bdc6d4;
   border-radius: 5px;
   padding: 3px;
+  z-index: 9999;
 }
 
 .tooltips::after {
@@ -45,4 +46,5 @@
   border-width: 5px;
   border-style: solid;
   border-color: transparent transparent #eee transparent; 
+  z-index: 9999;
 }
