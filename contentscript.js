@@ -320,68 +320,123 @@ function Tooltip() {
 		'680 - TM 103 - Замедленная бомба',
 		'681 - TM 104 - Крик банши',
 	]
-	   const tooltips = {}
 
-			function createTooltip(node, text) {
-				let tooltipDiv = node.querySelector('.tooltips')
-				if (tooltipDiv) {
-					node.removeChild(tooltipDiv)
-				}
-				tooltipDiv = document.createElement('div')
-				tooltipDiv.classList.add('tooltips')
-				tooltipDiv.textContent = text
-				node.appendChild(tooltipDiv)
-			}
+	const arrBall = [
+		[
+			'1 - Монстробол',
+			'2 - Гритбол',
+			'3 - Мастербол',
+			'4 - Ультрабол',
+			'5 - Люксбол',
+			'6 - Фастбол',
+			'7 - Френдбол',
+			'8 - Левелбол',
+			'9 - Лавбол',
+			'10 - Лурбол',
+			'11 - Таймербол',
+			'12 - Нестбол',
+			'13 - Даркбол',
+			'14 - Лайтбол',
+			'15 - Новичка',
+			'16 - Трансбол',
+			'18 - Супердаркбол',
+			'30 - Монстробол Браконьера',
+			'101 - Багбол',
+			'102 - Блэкбол',
+			'103 - Драгонбол',
+			'104 - Электробол',
+			'105 - Файтбол',
+			'106 - Фаербол',
+			'107 - Флайбол',
+			'108 - Гостбол',
+			'109 - Грасбол',
+			'110 - Граундбол',
+			'111 - Айсбол',
+			'112 - Нормобол',
+			'113 - Токсикбол',
+			'114 - Псибол',
+			'115 - Стоунбол',
+			'116 - Стилбол',
+			'117 - Дайвбол',
+			///
+		],
+	]
+	const tooltips = {}
 
-			function handleMutation(mutationsList, observer) {
-				for (let mutation of mutationsList) {
-					if (mutation.type === 'childList' || (mutation.type === 'attributes' && mutation.attributeName === 'data-bind')) {
-						const nodes = mutation.addedNodes || [mutation.target]
-						nodes.forEach((node) => {
-							if (node.classList && node.classList.contains('trade-card')) {
-								const titleElement = node.querySelector('[data-bind="text: itemTitle"]')
-								const memoElement = node.querySelector('span[data-bind="text: memoFormated"]')
-								if (titleElement && memoElement) {
-									const titleText = titleElement.textContent.trim()
-									const memoText = memoElement.textContent.trim()
-									if (titleText === 'Тренировочная Машина') {
-										const [key, ...rest] = memoText.split(' ')
-										const tooltipText = tooltips[key]
-										if (tooltipText) {
-											createTooltip(node, tooltipText)
+	function createTooltip(node, text) {
+		let tooltipDiv = node.querySelector('.tooltips')
+		if (tooltipDiv) {
+			node.removeChild(tooltipDiv)
+		}
+		tooltipDiv = document.createElement('div')
+		tooltipDiv.classList.add('tooltips')
+		tooltipDiv.textContent = text
+		node.appendChild(tooltipDiv)
+	}
+
+	function handleMutation(mutationsList, observer) {
+		for (let mutation of mutationsList) {
+			if (mutation.type === 'childList' || (mutation.type === 'attributes' && mutation.attributeName === 'data-bind')) {
+				const nodes = mutation.addedNodes || [mutation.target]
+				nodes.forEach((node) => {
+					if (node.classList && node.classList.contains('trade-card')) {
+						const titleElement = node.querySelector('[data-bind="text: itemTitle"]')
+						const memoElement = node.querySelector('span[data-bind="text: memoFormated"]')
+						if (titleElement && memoElement) {
+							const titleText = titleElement.textContent.trim()
+							const memoText = memoElement.textContent.trim()
+							if (titleText === 'Тренировочная Машина') {
+								const [key, ...rest] = memoText.split(' - ')
+								const tooltipText = tooltips[key]
+								if (tooltipText) {
+									createTooltip(node, tooltipText)
+								}
+							} else if (titleText === 'Графитовый колокольчик') {
+								const activeRows = document.querySelectorAll('tr.active')
+								if (activeRows.length > 0) {
+									activeRows.forEach((row) => {
+										const datElement = row.querySelector('span[data-bind="text: dat"]')
+										if (datElement) {
+											const burnTime = (new Date(datElement.textContent) - new Date(memoText * 1000)) / (1000 * 60 * 60 * 24)
+											const percentRemaining = ((burnTime / 31) * 100).toFixed(2)
+											const positivePercentRemaining = Math.abs(percentRemaining)
+											createTooltip(node, `${positivePercentRemaining}%`)
 										}
-									} else if (titleText === 'Графитовый колокольчик') {
-										const activeRows = document.querySelectorAll('tr.active')
-										if (activeRows.length > 0) {
-											activeRows.forEach((row) => {
-												const datElement = row.querySelector('span[data-bind="text: dat"]')
-												if (datElement) {
-													const burnTime = (new Date(datElement.textContent) - new Date(memoText * 1000)) / (1000 * 60 * 60 * 24)
-													const percentRemaining = ((burnTime / 31) * 100).toFixed(2)
-													const positivePercentRemaining = Math.abs(percentRemaining)
-													createTooltip(node, `${positivePercentRemaining}%`)
-												}
-											})
-										}
-									}
+									})
+								}
+							} else if (titleText === 'Монстробол') {
+								const [key, ...rest] = memoText.split(' - ')
+								const tooltipText = tooltips[key]
+								if (tooltipText) {
+									createTooltip(node, tooltipText)
 								}
 							}
-						})
+						}
 					}
-				}
+				})
 			}
+		}
+	}
 
-			const observer = new MutationObserver(handleMutation)
-			observer.observe(document.body, {
-				childList: true,
-				subtree: true,
-				attributes: true,
-				attributeFilter: ['data-bind'],
-			})
+	const observer = new MutationObserver(handleMutation)
+	observer.observe(document.body, {
+		childList: true,
+		subtree: true,
+		attributes: true,
+		attributeFilter: ['data-bind'],
+	})
 
-			// Заполнение объекта tooltips
-			arrMemoTM.forEach((item) => {
-				const [key, ...rest] = item.split(' - ')
-				tooltips[key] = rest.join(' - ')
-			})
+	// Fill tooltips object for arrMemoTM
+	arrMemoTM.forEach((item) => {
+		const [key, ...rest] = item.split(' - ')
+		tooltips[key] = rest.join(' - ')
+	})
+
+	// Fill tooltips object for arrBall
+	arrBall.forEach((ballArray) => {
+		ballArray.forEach((item) => {
+			const [key, value] = item.split(' - ')
+			tooltips[key] = value
+		})
+	})
 }
