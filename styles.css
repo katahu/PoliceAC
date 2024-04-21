@@ -23,28 +23,130 @@
 	z-index: 9999;
 }
 
-
 .tooltips {
-  position: relative;
-  top: 5px;
-  left: 0;
-  font-size: 10px;
-  background-color: #eee;
-  border: 1px solid #bbbbbb;
-  box-shadow: 0 0 4px 1px #bdc6d4;
-  border-radius: 5px;
-  padding: 3px;
-  z-index: 9999;
+	position: relative;
+	top: 5px;
+	left: 0;
+	font-size: 10px;
+	background-color: #eee;
+	border: 1px solid #bbbbbb;
+	box-shadow: 0 0 4px 1px #bdc6d4;
+	border-radius: 5px;
+	padding: 3px;
+	z-index: 9999;
 }
 
 .tooltips::after {
-  content: "";
-  position: absolute;
-  top: -10px; 
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent transparent #eee transparent; 
-  z-index: 9999;
+	content: '';
+	position: absolute;
+	top: -10px;
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: transparent transparent #eee transparent;
+	z-index: 9999;
+}
+
+.start-container {
+	gap: 10px;
+	z-index: 9999;
+	animation-duration: 0.5s;
+	animation-timing-function: ease-in-out;
+}
+
+.mid-container {
+	position: absolute;
+	top: 8px;
+	height: 26px !important;
+	right: 5px;
+	align-items: baseline;
+	align-items: center;
+	gap: 10px;
+	z-index: 9999;
+}
+.mid-input {
+	width: 100px;
+	padding: 2px !important;
+	margin: 0 !important;
+	animation-duration: 0.5s;
+	animation-timing-function: ease-in-out;
+}
+.mid-input::placeholder {
+	font-size: 10px;
+}
+
+.svg-eye,
+.svg-up,
+.svg-dwn {
+	width: 15px;
+	fill: #777777;
+	transition: all 0.2s ease-in-out;
+}
+.svg-eye:hover,
+.svg-up:hover,
+.svg-dwn:hover {
+	cursor: pointer;
+	/* fill: #08c;  */
+	fill: black;
+}
+.svg-up,
+.svg-dwn {
+	width: 13px;
+}
+
+/* Появился */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateX(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+/* Ушёл */
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(20px);
+	}
+}
+.animate-in {
+	display: block;
+	animation-name: fadeIn;
+}
+
+.animate-out {
+	animation-name: fadeOut;
+}
+
+.alarm {
+	position: absolute;
+	z-index: 9999;
+	right: 5px;
+	border-radius: 10px;
+	top: 50px;
+	padding: 30px;
+	background-color: #f0f0f0;
+	box-shadow: 0 1px 10px rgba(32, 32, 32, 0.5);
+	animation-duration: 2s;
+	animation-timing-function: ease-in-out;
+}
+.fadeOutAlarm {
+	animation-name: fadeOutAlarm;
+}
+@keyframes fadeOutAlarm {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
 }

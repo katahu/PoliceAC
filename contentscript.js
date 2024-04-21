@@ -1,209 +1,272 @@
-let isScript1Running = false
-let isScript2Running = false
-let timeoutId
-
+const TEST_CHOICE_KEY = 'testChoice'
+const DELAY_KEY = 'clickDelay'
+let clickPaused = false
+let intervalId = null
+let currentRowIndex = 0
+let clickDelay = 800
 Tooltip()
 
-const initialScript = localStorage.getItem('initialScript') || ''
-const element = document.querySelector('#my-element')
+document.body.onload = function () {
+	const selectedTest = localStorage.getItem(TEST_CHOICE_KEY)
 
-function createCustomDivWithButtons(buttonTexts, clickHandlers) {
-	const customMainDiv = document.createElement('div')
-	customMainDiv.classList.add('custom-main')
-	customMainDiv.style.display = 'none'
+	const midcontainer = document.createElement('div')
+	midcontainer.classList.add('mid-container')
+	midcontainer.style.display = 'none'
+	document.body.appendChild(midcontainer)
 
-	buttonTexts.forEach((text, index) => {
-		const button = document.createElement('button')
-		button.classList.add('btn', 'btn-cs')
-		button.textContent = text
-		button.addEventListener('click', () => {
-			clickHandlers[index]()
-		})
-		customMainDiv.appendChild(button)
+	const input = document.createElement('input')
+	input.type = 'text'
+	input.placeholder = 'Время задержки (мс)'
+	input.classList.add('mid-input')
+	input.style.display = 'none'
+	midcontainer.appendChild(input)
+
+	const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+	svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+	svgElement.setAttribute('viewBox', '0 0 512 512')
+	svgElement.classList.add('svg-eye')
+	const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+	pathElement.setAttribute('d', 'M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z')
+	svgElement.appendChild(pathElement)
+	midcontainer.appendChild(svgElement)
+
+	const startcontainer = document.createElement('div')
+	startcontainer.classList.add('start-container')
+	startcontainer.style.display = 'none'
+
+	midcontainer.appendChild(startcontainer)
+
+	const svgUp = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+	svgUp.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+	svgUp.setAttribute('viewBox', '0 0 384 512')
+	svgUp.classList.add('svg-up')
+	const pathElementUp = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+	pathElementUp.setAttribute('d', 'M192 82.4L334.7 232.3c.8 .8 1.3 2 1.3 3.2c0 2.5-2 4.6-4.6 4.6H248c-13.3 0-24 10.7-24 24V432H160V264c0-13.3-10.7-24-24-24H52.6c-2.5 0-4.6-2-4.6-4.6c0-1.2 .5-2.3 1.3-3.2L192 82.4zm192 153c0-13.5-5.2-26.5-14.5-36.3L222.9 45.2C214.8 36.8 203.7 32 192 32s-22.8 4.8-30.9 13.2L14.5 199.2C5.2 208.9 0 221.9 0 235.4c0 29 23.5 52.6 52.6 52.6H112V432c0 26.5 21.5 48 48 48h64c26.5 0 48-21.5 48-48V288h59.4c29 0 52.6-23.5 52.6-52.6z')
+
+	if (selectedTest === 'clickTrUp') {
+		pathElementUp.setAttribute('d', 'M169.4 41.4c12.5-12.5 32.8-12.5 45.3 0l160 160c9.2 9.2 11.9 22.9 6.9 34.9s-16.6 19.8-29.6 19.8H256V440c0 22.1-17.9 40-40 40H168c-22.1 0-40-17.9-40-40V256H32c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9l160-160z')
+	} else {
+		pathElementUp.setAttribute('d', 'M192 82.4L334.7 232.3c.8 .8 1.3 2 1.3 3.2c0 2.5-2 4.6-4.6 4.6H248c-13.3 0-24 10.7-24 24V432H160V264c0-13.3-10.7-24-24-24H52.6c-2.5 0-4.6-2-4.6-4.6c0-1.2 .5-2.3 1.3-3.2L192 82.4zm192 153c0-13.5-5.2-26.5-14.5-36.3L222.9 45.2C214.8 36.8 203.7 32 192 32s-22.8 4.8-30.9 13.2L14.5 199.2C5.2 208.9 0 221.9 0 235.4c0 29 23.5 52.6 52.6 52.6H112V432c0 26.5 21.5 48 48 48h64c26.5 0 48-21.5 48-48V288h59.4c29 0 52.6-23.5 52.6-52.6z')
+	}
+	svgUp.appendChild(pathElementUp)
+	startcontainer.appendChild(svgUp)
+
+	const svgDwn = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+	svgDwn.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+	svgDwn.setAttribute('viewBox', '0 0 384 512')
+	svgDwn.classList.add('svg-dwn')
+	const pathElementDwn = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+
+	if (selectedTest === 'clickTrDown') {
+		pathElementDwn.setAttribute('d', 'M214.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8l96 0 0-184c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 184 96 0c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-160 160z')
+	} else {
+		pathElementDwn.setAttribute('d', 'M192 429.6L49.3 279.7c-.8-.8-1.3-2-1.3-3.2c0-2.5 2-4.6 4.6-4.6l83.4 0c13.3 0 24-10.7 24-24l0-168 64 0 0 168c0 13.3 10.7 24 24 24l83.4 0c2.5 0 4.6 2 4.6 4.6c0 1.2-.5 2.3-1.3 3.2L192 429.6zM0 276.6c0 13.5 5.2 26.5 14.5 36.3L161.1 466.8c8.1 8.5 19.2 13.2 30.9 13.2s22.8-4.8 30.9-13.2L369.5 312.8c9.3-9.8 14.5-22.8 14.5-36.3c0-29-23.5-52.6-52.6-52.6L272 224l0-144c0-26.5-21.5-48-48-48l-64 0c-26.5 0-48 21.5-48 48l0 144-59.4 0C23.5 224 0 247.5 0 276.6z')
+	}
+	svgDwn.appendChild(pathElementDwn)
+	startcontainer.appendChild(svgDwn)
+
+	function Alarm() {
+		const alarm = document.createElement('div')
+		alarm.textContent = 'Перезагрузите страницу, для вступления изменений в силу.'
+		alarm.classList.add('alarm')
+		document.body.appendChild(alarm)
+		setTimeout(() => {
+			alarm.classList.add('fadeOutAlarm')
+			setTimeout(() => {
+				alarm.remove()
+			}, 2000)
+		}, 3500)
+	}
+
+	svgUp.addEventListener('click', () => {
+		localStorage.setItem(TEST_CHOICE_KEY, 'clickTrUp')
+		Alarm()
+
+		pathElementUp.setAttribute('d', 'M169.4 41.4c12.5-12.5 32.8-12.5 45.3 0l160 160c9.2 9.2 11.9 22.9 6.9 34.9s-16.6 19.8-29.6 19.8H256V440c0 22.1-17.9 40-40 40H168c-22.1 0-40-17.9-40-40V256H32c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9l160-160z')
+
+		pathElementDwn.setAttribute('d', 'M192 429.6L49.3 279.7c-.8-.8-1.3-2-1.3-3.2c0-2.5 2-4.6 4.6-4.6l83.4 0c13.3 0 24-10.7 24-24l0-168 64 0 0 168c0 13.3 10.7 24 24 24l83.4 0c2.5 0 4.6 2 4.6 4.6c0 1.2-.5 2.3-1.3 3.2L192 429.6zM0 276.6c0 13.5 5.2 26.5 14.5 36.3L161.1 466.8c8.1 8.5 19.2 13.2 30.9 13.2s22.8-4.8 30.9-13.2L369.5 312.8c9.3-9.8 14.5-22.8 14.5-36.3c0-29-23.5-52.6-52.6-52.6L272 224l0-144c0-26.5-21.5-48-48-48l-64 0c-26.5 0-48 21.5-48 48l0 144-59.4 0C23.5 224 0 247.5 0 276.6z')
 	})
 
-	return customMainDiv
-}
+	svgDwn.addEventListener('click', () => {
+		localStorage.setItem(TEST_CHOICE_KEY, 'clickTrDown')
+		Alarm()
+		pathElementUp.setAttribute('d', 'M192 82.4L334.7 232.3c.8 .8 1.3 2 1.3 3.2c0 2.5-2 4.6-4.6 4.6H248c-13.3 0-24 10.7-24 24V432H160V264c0-13.3-10.7-24-24-24H52.6c-2.5 0-4.6-2-4.6-4.6c0-1.2 .5-2.3 1.3-3.2L192 82.4zm192 153c0-13.5-5.2-26.5-14.5-36.3L222.9 45.2C214.8 36.8 203.7 32 192 32s-22.8 4.8-30.9 13.2L14.5 199.2C5.2 208.9 0 221.9 0 235.4c0 29 23.5 52.6 52.6 52.6H112V432c0 26.5 21.5 48 48 48h64c26.5 0 48-21.5 48-48V288h59.4c29 0 52.6-23.5 52.6-52.6z')
 
-const customMainDiv = createCustomDivWithButtons(['Сверху', 'Снизу'], [() => startScript(Up, isScript1Running, isScript2Running), () => startScript(Down, isScript2Running, isScript1Running)])
-let ulNav = document.querySelector('.nav')
-ulNav.appendChild(customMainDiv)
+		pathElementDwn.setAttribute('d', 'M214.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8l96 0 0-184c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 184 96 0c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-160 160z')
+	})
 
-if (initialScript === 'script1') {
-	customMainDiv.children[0].click()
-} else if (initialScript === 'script2') {
-	customMainDiv.children[1].click()
-}
+	const selectedUpDn = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+	selectedUpDn.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+	selectedUpDn.setAttribute('viewBox', '0 0 384 512')
+	selectedUpDn.classList.add('svg-eye')
+	const pathElementSelect = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+	pathElementSelect.setAttribute('d', 'M320 64H280h-9.6C263 27.5 230.7 0 192 0s-71 27.5-78.4 64H104 64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64zM80 112v24c0 13.3 10.7 24 24 24h88 88c13.3 0 24-10.7 24-24V112h16c8.8 0 16 7.2 16 16V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V128c0-8.8 7.2-16 16-16H80zm88-32a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zm3.3 155.3c6.2-6.2 6.2-16.4 0-22.6s-16.4-6.2-22.6 0L112 249.4 99.3 236.7c-6.2-6.2-16.4-6.2-22.6 0s-6.2 16.4 0 22.6l24 24c6.2 6.2 16.4 6.2 22.6 0l48-48zM192 272c0 8.8 7.2 16 16 16h64c8.8 0 16-7.2 16-16s-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm-32 96c0 8.8 7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H176c-8.8 0-16 7.2-16 16zm-48 24a24 24 0 1 0 0-48 24 24 0 1 0 0 48z')
+	selectedUpDn.appendChild(pathElementSelect)
+	midcontainer.appendChild(selectedUpDn)
 
-const observer = new MutationObserver((mutationsList) => {
-	for (const mutation of mutationsList) {
-		if (mutation.type === 'childList') {
-			if (document.getElementById('tradesSection')) {
-				customMainDiv.style.display = 'flex'
-			} else {
-				customMainDiv.style.display = 'none'
-			}
+	let isVisible = false
+
+	svgElement.addEventListener('click', () => {
+		isVisible = !isVisible
+		if (isVisible) {
+			pathElement.setAttribute('d', 'M256 0a256 256 0 1 1 0 512A256 256 0 1 1 256 0zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z')
+
+			input.classList.remove('animate-out')
+			input.classList.add('animate-in')
+			input.style.display = 'block'
+		} else {
+			pathElement.setAttribute('d', 'M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z')
+
+			input.classList.remove('animate-in')
+			input.classList.add('animate-out')
+			setTimeout(() => {
+				input.style.display = 'none'
+			}, 495)
 		}
-	}
-})
+	})
+	let isVisibleUpDn = false
 
-observer.observe(document.body, { childList: true, subtree: true })
+	selectedUpDn.addEventListener('click', () => {
+		isVisibleUpDn = !isVisibleUpDn
+		if (isVisibleUpDn) {
+			pathElementSelect.setAttribute('d', 'M192 0c-41.8 0-77.4 26.7-90.5 64H64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H282.5C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm-4.7 132.7c6.2 6.2 6.2 16.4 0 22.6l-64 64c-6.2 6.2-16.4 6.2-22.6 0l-32-32c-6.2-6.2-6.2-16.4 0-22.6s16.4-6.2 22.6 0L112 249.4l52.7-52.7c6.2-6.2 16.4-6.2 22.6 0zM192 272c0-8.8 7.2-16 16-16h96c8.8 0 16 7.2 16 16s-7.2 16-16 16H208c-8.8 0-16-7.2-16-16zm-16 80H304c8.8 0 16 7.2 16 16s-7.2 16-16 16H176c-8.8 0-16-7.2-16-16s7.2-16 16-16zM72 368a24 24 0 1 1 48 0 24 24 0 1 1 -48 0z')
+			startcontainer.classList.remove('animate-out')
+			startcontainer.classList.add('animate-in')
+			startcontainer.style.display = 'flex'
+		} else {
+			pathElementSelect.setAttribute('d', 'M320 64H280h-9.6C263 27.5 230.7 0 192 0s-71 27.5-78.4 64H104 64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64zM80 112v24c0 13.3 10.7 24 24 24h88 88c13.3 0 24-10.7 24-24V112h16c8.8 0 16 7.2 16 16V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V128c0-8.8 7.2-16 16-16H80zm88-32a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zm3.3 155.3c6.2-6.2 6.2-16.4 0-22.6s-16.4-6.2-22.6 0L112 249.4 99.3 236.7c-6.2-6.2-16.4-6.2-22.6 0s-6.2 16.4 0 22.6l24 24c6.2 6.2 16.4 6.2 22.6 0l48-48zM192 272c0 8.8 7.2 16 16 16h64c8.8 0 16-7.2 16-16s-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm-32 96c0 8.8 7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H176c-8.8 0-16 7.2-16 16zm-48 24a24 24 0 1 0 0-48 24 24 0 1 0 0 48z')
 
-function startScript(scriptFunction, currentScriptRunning, otherScriptRunning) {
-	if (!currentScriptRunning && !otherScriptRunning) {
-		currentScriptRunning = true
-		scriptFunction()
-		timeoutId = setTimeout(() => {
-			currentScriptRunning = false
-		}, 1000)
-	} else if (otherScriptRunning) {
-		clearTimeout(timeoutId)
-		otherScriptRunning = false
-	}
-}
+			startcontainer.classList.remove('animate-in')
+			startcontainer.classList.add('animate-out')
+			setTimeout(() => {
+				startcontainer.style.display = 'none'
+			}, 495)
+		}
+	})
+	const startbtn = document.createElement('button')
+	startbtn.classList.add('btn', 'btn-cs')
+	startbtn.textContent = 'Старт'
+	startbtn.disabled = false
+	midcontainer.appendChild(startbtn)
 
-function Up() {
-	console.log('Функция Up() вызвана')
-	let tableBordered
-	let tbodyElements
-	let clickerRunning = false
-	let currentTbodyIndex = 0
-	let currentTrIndex = 0
-	let delayTime = parseInt(localStorage.getItem('delayTime')) || 600
+	const pausebtn = document.createElement('button')
+	pausebtn.classList.add('btn', 'btn-cs')
+	pausebtn.textContent = 'Пауза'
+	pausebtn.disabled = true
+	midcontainer.appendChild(pausebtn)
 
-	const mainDiv = document.createElement('div')
-	mainDiv.classList.add('main')
-	mainDiv.style.display = 'none'
-	document.body.appendChild(mainDiv)
+	let clickDelay = parseInt(localStorage.getItem(DELAY_KEY)) || 500
 
-	const inputDelay = document.createElement('input')
-	inputDelay.type = 'text'
-	inputDelay.placeholder = 'Время задержки (мс)'
-	inputDelay.classList.add('custom-input')
-	inputDelay.id = 'delayInput'
-	mainDiv.appendChild(inputDelay)
-
-	const startButton = createButton('Старт')
-	const stopButton = createButton('Пауза')
-	mainDiv.appendChild(startButton)
-	mainDiv.appendChild(stopButton)
-
-	startButton.addEventListener('click', handleStart)
-	stopButton.addEventListener('click', handleStop)
-
-	const observer = new MutationObserver(handleMutation)
-	observer.observe(document.body, { childList: true, subtree: true })
-
-	function handleStart() {
-		const delayInput = document.getElementById('delayInput')
-		delayTime = parseInt(delayInput.value) || delayTime
-		startClicker()
+	function saveClickDelay(delay) {
+		localStorage.setItem(DELAY_KEY, delay.toString())
 	}
 
-	function handleStop() {
-		stopClicker()
-	}
+	startbtn.addEventListener('click', () => {
+		const inputDelay = parseInt(input.value)
+		if (!isNaN(inputDelay) && inputDelay > 0) {
+			clickDelay = inputDelay
+			saveClickDelay(clickDelay)
+		}
+		pausebtn.disabled = false
+		startbtn.disabled = true
+		if (selectedTest === 'clickTrUp') {
+			clickTrUp()
+		} else if (selectedTest === 'clickTrDown') {
+			clickTrDown()
+		}
+		clearIndex(startbtn, pausebtn)
+		clickPaused = false
+	})
 
-	function handleMutation(mutationsList) {
+	pausebtn.addEventListener('click', () => {
+		clickPaused = !clickPaused
+		pausebtn.disabled = true
+		startbtn.disabled = false
+		clearInterval(intervalId)
+	})
+
+	const observer = new MutationObserver((mutationsList) => {
 		for (const mutation of mutationsList) {
 			if (mutation.type === 'childList') {
-				const tableWithTbody = document.querySelector('table[data-bind="foreach: currentTrades"]')
-				if (tableWithTbody) {
-					observeTable()
-					mainDiv.style.display = 'flex'
+				if (document.getElementById('tradesSection')) {
+					midcontainer.style.display = 'flex'
 				} else {
-					mainDiv.style.display = 'none'
+					midcontainer.style.display = 'none'
 				}
 			}
 		}
-	}
+	})
 
-	function observeTable() {
-		tableBordered = document.querySelector('table[data-bind="foreach: currentTrades"]')
-		if (tableBordered) {
-			const observer = new MutationObserver(() => {
-				currentTbodyIndex = 0
-			})
-			observer.observe(tableBordered, { childList: true, subtree: true })
-		}
-	}
-
-	function startClicker() {
-		clickerRunning = true
-		updateActiveIndices()
-		clickOnTrElements(currentTbodyIndex, currentTrIndex)
-		localStorage.setItem('delayTime', delayTime)
-	}
-
-	function stopClicker() {
-		clickerRunning = false
-		currentTbodyIndex = tbodyWithActiveIndex()
-		currentTrIndex = trWithActiveIndex(currentTbodyIndex)
-		localStorage.removeItem('delayTime')
-	}
-
-	function updateActiveIndices() {
-		currentTbodyIndex = tbodyWithActiveIndex()
-		currentTrIndex = trWithActiveIndex(currentTbodyIndex)
-	}
-
-	function tbodyWithActiveIndex() {
-		for (let i = 0; i < tbodyElements.length; i++) {
-			if (tbodyElements[i].querySelector('.active')) {
-				return i
-			}
-		}
-		return 0
-	}
-
-	function trWithActiveIndex(tbodyIndex) {
-		const trElements = tbodyElements[tbodyIndex].querySelectorAll('tr')
-		for (let i = 0; i < trElements.length; i++) {
-			if (trElements[i].classList.contains('active')) {
-				return i
-			}
-		}
-		return 0
-	}
-
-	function clickOnTrElements(tbodyIndex, trIndex) {
-		if (clickerRunning && tbodyIndex < tbodyElements.length) {
-			const trElements = tbodyElements[tbodyIndex].querySelectorAll('tr')
-			if (trIndex < trElements.length) {
-				trElements[trIndex].click()
-				setTimeout(() => {
-					if (clickerRunning) {
-						clickOnTrElements(tbodyIndex, trIndex + 1)
-					}
-				}, delayTime)
-			} else {
-				setTimeout(() => {
-					if (clickerRunning) {
-						clickOnTrElements(tbodyIndex + 1, 0)
-					}
-				}, delayTime)
-			}
-		}
-	}
-
-	function findTbodyAndStart() {
-		tableBordered = document.querySelector('table[data-bind="foreach: currentTrades"]')
-		if (tableBordered) {
-			tbodyElements = tableBordered.querySelectorAll('tbody')
-			if (tbodyElements.length > 0) {
-				return
-			}
-		}
-	}
-
-	setInterval(findTbodyAndStart, 2000)
+	const pageContent = document.getElementById('pageContent')
+	observer.observe(pageContent, { childList: true, subtree: true })
 }
 
-function createButton(text) {
-	const button = document.createElement('button')
-	button.classList.add('btn-id', 'btn', 'btn-cs')
-	button.textContent = text
-	return button
+function clickTrUp() {
+	function clickRowWithDelay(row, delay) {
+		row.click()
+	}
+
+	var rows = document.querySelectorAll('table[data-bind="foreach: currentTrades"] tr')
+	var delay = clickDelay
+	var currentRowIndex = rows.length - 1
+
+	intervalId = setInterval(function () {
+		if (!clickPaused) {
+			if (currentRowIndex >= 0) {
+				console.log('Index:', currentRowIndex)
+				clickRowWithDelay(rows[currentRowIndex], delay)
+				currentRowIndex--
+			} else {
+				clearInterval(intervalId)
+			}
+		}
+	}, delay)
+}
+
+function clickTrDown() {
+	function clickRowWithDelay(row, delay) {
+		row.click()
+	}
+
+	var rows = document.querySelectorAll('table[data-bind="foreach: currentTrades"] tr')
+	var delay = clickDelay
+
+	intervalId = setInterval(function () {
+		if (!clickPaused) {
+			if (currentRowIndex < rows.length) {
+				console.log('Index:', currentRowIndex)
+				clickRowWithDelay(rows[currentRowIndex], delay)
+				currentRowIndex++
+			} else {
+				clearInterval(intervalId)
+			}
+		}
+	}, delay)
+}
+
+function clearIndex(startbtn, pausebtn) {
+	const elements = document.querySelectorAll('[data-bind="css:{active: $root.paginator().currentPage() == page}"]')
+
+	const observer = new MutationObserver((mutationsList, observer) => {
+		for (let mutation of mutationsList) {
+			if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+				console.log('Класс элемента был изменен:', mutation.target)
+				currentRowIndex = 0
+				startbtn.disabled = false
+				pausebtn.disabled = true
+			}
+		}
+	})
+
+	elements.forEach((element) => {
+		observer.observe(element, { attributes: true })
+	})
+	let updIndex = document.querySelector('div[data-bind="click: $root.newSearch"]')
+	updIndex.addEventListener('click', () => {
+		startbtn.disabled = false
+		pausebtn.disabled = true
+		currentRowIndex = 0
+	})
 }
 
 function Tooltip() {
@@ -361,9 +424,9 @@ function Tooltip() {
 			///
 		],
 	]
-	const tooltipsMemoTM = {} 
+	const tooltipsMemoTM = {}
 
-	const tooltipsBall = {} 
+	const tooltipsBall = {}
 
 	function createTooltip(node, text) {
 		let tooltipDiv = node.querySelector('.tooltips')
