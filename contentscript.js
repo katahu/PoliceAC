@@ -3,7 +3,7 @@ const DELAY_KEY = 'clickDelay'
 let clickPaused = false
 let intervalId = null
 let currentRowIndex = 0
-let clickDelay = 800
+let clickDelay = parseInt(localStorage.getItem(DELAY_KEY)) || 1000
 Tooltip()
 
 document.body.onload = function () {
@@ -13,7 +13,7 @@ document.body.onload = function () {
 	midcontainer.classList.add('mid-container')
 	midcontainer.style.display = 'none'
 	document.body.appendChild(midcontainer)
-
+	1.08
 	const input = document.createElement('input')
 	input.type = 'text'
 	input.placeholder = 'Время задержки (мс)'
@@ -24,7 +24,7 @@ document.body.onload = function () {
 	const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 	svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
 	svgElement.setAttribute('viewBox', '0 0 512 512')
-	svgElement.classList.add('svg-eye')
+	svgElement.classList.add('svg-all', 'gr')
 	const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path')
 	pathElement.setAttribute('d', 'M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z')
 	svgElement.appendChild(pathElement)
@@ -39,7 +39,7 @@ document.body.onload = function () {
 	const svgUp = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 	svgUp.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
 	svgUp.setAttribute('viewBox', '0 0 384 512')
-	svgUp.classList.add('svg-up')
+	svgUp.classList.add('svg-up', 'svg-all', 'gr')
 	const pathElementUp = document.createElementNS('http://www.w3.org/2000/svg', 'path')
 	pathElementUp.setAttribute('d', 'M192 82.4L334.7 232.3c.8 .8 1.3 2 1.3 3.2c0 2.5-2 4.6-4.6 4.6H248c-13.3 0-24 10.7-24 24V432H160V264c0-13.3-10.7-24-24-24H52.6c-2.5 0-4.6-2-4.6-4.6c0-1.2 .5-2.3 1.3-3.2L192 82.4zm192 153c0-13.5-5.2-26.5-14.5-36.3L222.9 45.2C214.8 36.8 203.7 32 192 32s-22.8 4.8-30.9 13.2L14.5 199.2C5.2 208.9 0 221.9 0 235.4c0 29 23.5 52.6 52.6 52.6H112V432c0 26.5 21.5 48 48 48h64c26.5 0 48-21.5 48-48V288h59.4c29 0 52.6-23.5 52.6-52.6z')
 
@@ -54,7 +54,7 @@ document.body.onload = function () {
 	const svgDwn = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 	svgDwn.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
 	svgDwn.setAttribute('viewBox', '0 0 384 512')
-	svgDwn.classList.add('svg-dwn')
+	svgDwn.classList.add('svg-dwn', 'svg-all', 'gr')
 	const pathElementDwn = document.createElementNS('http://www.w3.org/2000/svg', 'path')
 
 	if (selectedTest === 'clickTrDown') {
@@ -98,7 +98,7 @@ document.body.onload = function () {
 	const selectedUpDn = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 	selectedUpDn.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
 	selectedUpDn.setAttribute('viewBox', '0 0 384 512')
-	selectedUpDn.classList.add('svg-eye')
+	selectedUpDn.classList.add('svg-all', 'gr')
 	const pathElementSelect = document.createElementNS('http://www.w3.org/2000/svg', 'path')
 	pathElementSelect.setAttribute('d', 'M320 64H280h-9.6C263 27.5 230.7 0 192 0s-71 27.5-78.4 64H104 64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64zM80 112v24c0 13.3 10.7 24 24 24h88 88c13.3 0 24-10.7 24-24V112h16c8.8 0 16 7.2 16 16V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V128c0-8.8 7.2-16 16-16H80zm88-32a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zm3.3 155.3c6.2-6.2 6.2-16.4 0-22.6s-16.4-6.2-22.6 0L112 249.4 99.3 236.7c-6.2-6.2-16.4-6.2-22.6 0s-6.2 16.4 0 22.6l24 24c6.2 6.2 16.4 6.2 22.6 0l48-48zM192 272c0 8.8 7.2 16 16 16h64c8.8 0 16-7.2 16-16s-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm-32 96c0 8.8 7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H176c-8.8 0-16 7.2-16 16zm-48 24a24 24 0 1 0 0-48 24 24 0 1 0 0 48z')
 	selectedUpDn.appendChild(pathElementSelect)
@@ -109,14 +109,16 @@ document.body.onload = function () {
 	svgElement.addEventListener('click', () => {
 		isVisible = !isVisible
 		if (isVisible) {
+			svgElement.classList.remove('gr')
+			svgElement.classList.add('bl')
 			pathElement.setAttribute('d', 'M256 0a256 256 0 1 1 0 512A256 256 0 1 1 256 0zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z')
-
 			input.classList.remove('animate-out')
 			input.classList.add('animate-in')
 			input.style.display = 'block'
 		} else {
+			svgElement.classList.add('gr')
+			svgElement.classList.remove('bl')
 			pathElement.setAttribute('d', 'M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z')
-
 			input.classList.remove('animate-in')
 			input.classList.add('animate-out')
 			setTimeout(() => {
@@ -129,13 +131,16 @@ document.body.onload = function () {
 	selectedUpDn.addEventListener('click', () => {
 		isVisibleUpDn = !isVisibleUpDn
 		if (isVisibleUpDn) {
+			selectedUpDn.classList.remove('gr')
+			selectedUpDn.classList.add('bl')
 			pathElementSelect.setAttribute('d', 'M192 0c-41.8 0-77.4 26.7-90.5 64H64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H282.5C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm-4.7 132.7c6.2 6.2 6.2 16.4 0 22.6l-64 64c-6.2 6.2-16.4 6.2-22.6 0l-32-32c-6.2-6.2-6.2-16.4 0-22.6s16.4-6.2 22.6 0L112 249.4l52.7-52.7c6.2-6.2 16.4-6.2 22.6 0zM192 272c0-8.8 7.2-16 16-16h96c8.8 0 16 7.2 16 16s-7.2 16-16 16H208c-8.8 0-16-7.2-16-16zm-16 80H304c8.8 0 16 7.2 16 16s-7.2 16-16 16H176c-8.8 0-16-7.2-16-16s7.2-16 16-16zM72 368a24 24 0 1 1 48 0 24 24 0 1 1 -48 0z')
 			startcontainer.classList.remove('animate-out')
 			startcontainer.classList.add('animate-in')
 			startcontainer.style.display = 'flex'
 		} else {
+			selectedUpDn.classList.remove('bl')
+			selectedUpDn.classList.add('gr')
 			pathElementSelect.setAttribute('d', 'M320 64H280h-9.6C263 27.5 230.7 0 192 0s-71 27.5-78.4 64H104 64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64zM80 112v24c0 13.3 10.7 24 24 24h88 88c13.3 0 24-10.7 24-24V112h16c8.8 0 16 7.2 16 16V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V128c0-8.8 7.2-16 16-16H80zm88-32a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zm3.3 155.3c6.2-6.2 6.2-16.4 0-22.6s-16.4-6.2-22.6 0L112 249.4 99.3 236.7c-6.2-6.2-16.4-6.2-22.6 0s-6.2 16.4 0 22.6l24 24c6.2 6.2 16.4 6.2 22.6 0l48-48zM192 272c0 8.8 7.2 16 16 16h64c8.8 0 16-7.2 16-16s-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm-32 96c0 8.8 7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H176c-8.8 0-16 7.2-16 16zm-48 24a24 24 0 1 0 0-48 24 24 0 1 0 0 48z')
-
 			startcontainer.classList.remove('animate-in')
 			startcontainer.classList.add('animate-out')
 			setTimeout(() => {
@@ -153,9 +158,8 @@ document.body.onload = function () {
 	pausebtn.classList.add('btn', 'btn-cs')
 	pausebtn.textContent = 'Пауза'
 	pausebtn.disabled = true
+	pausebtn.style.cursor = 'not-allowed'
 	midcontainer.appendChild(pausebtn)
-
-	let clickDelay = parseInt(localStorage.getItem(DELAY_KEY)) || 500
 
 	function saveClickDelay(delay) {
 		localStorage.setItem(DELAY_KEY, delay.toString())
@@ -169,6 +173,8 @@ document.body.onload = function () {
 		}
 		pausebtn.disabled = false
 		startbtn.disabled = true
+		startbtn.style.cursor = 'not-allowed'
+		pausebtn.style.cursor = 'pointer'
 		if (selectedTest === 'clickTrUp') {
 			clickTrUp()
 		} else if (selectedTest === 'clickTrDown') {
@@ -182,6 +188,8 @@ document.body.onload = function () {
 		clickPaused = !clickPaused
 		pausebtn.disabled = true
 		startbtn.disabled = false
+		pausebtn.style.cursor = 'not-allowed'
+		startbtn.style.cursor = 'pointer'
 		clearInterval(intervalId)
 	})
 
@@ -213,7 +221,6 @@ function clickTrUp() {
 	intervalId = setInterval(function () {
 		if (!clickPaused) {
 			if (currentRowIndex >= 0) {
-				console.log('Index:', currentRowIndex)
 				clickRowWithDelay(rows[currentRowIndex], delay)
 				currentRowIndex--
 			} else {
@@ -234,7 +241,6 @@ function clickTrDown() {
 	intervalId = setInterval(function () {
 		if (!clickPaused) {
 			if (currentRowIndex < rows.length) {
-				console.log('Index:', currentRowIndex)
 				clickRowWithDelay(rows[currentRowIndex], delay)
 				currentRowIndex++
 			} else {
@@ -250,10 +256,11 @@ function clearIndex(startbtn, pausebtn) {
 	const observer = new MutationObserver((mutationsList, observer) => {
 		for (let mutation of mutationsList) {
 			if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-				console.log('Класс элемента был изменен:', mutation.target)
 				currentRowIndex = 0
 				startbtn.disabled = false
 				pausebtn.disabled = true
+				pausebtn.style.cursor = 'not-allowed'
+				startbtn.style.cursor = 'pointer'
 			}
 		}
 	})
@@ -265,6 +272,8 @@ function clearIndex(startbtn, pausebtn) {
 	updIndex.addEventListener('click', () => {
 		startbtn.disabled = false
 		pausebtn.disabled = true
+		pausebtn.style.cursor = 'not-allowed'
+		startbtn.style.cursor = 'pointer'
 		currentRowIndex = 0
 	})
 }
