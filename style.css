@@ -1,3 +1,10 @@
+a {
+	text-decoration: none !important;
+}
+a[style*='color: rgb(0, 0, 0)'] {
+	text-decoration: line-through !important;
+}
+
 [class^='fa'] {
 	color: #777;
 	transition: transform 200ms ease-in-out;
@@ -87,8 +94,8 @@
 }
 .my-custom-position {
 	position: absolute;
-	right: 10px;
-	top: 10%;
+	right: 2px;
+	top: 43px;
 }
 
 .tooltips {
@@ -102,28 +109,25 @@
 	border-radius: 5px;
 	padding: 3px;
 	z-index: 998;
-}
-
-.tooltips::after {
-	content: '';
-	position: absolute;
-	top: -10px;
-	left: 50%;
-	margin-left: -5px;
-	border-width: 5px;
-	border-style: solid;
-	border-color: transparent transparent #eee transparent;
-	z-index: 998;
+	&:hover {
+		opacity: 0.5;
+	}
+	&::after {
+		content: '';
+		position: absolute;
+		top: -10px;
+		left: 50%;
+		margin-left: -5px;
+		border-width: 5px;
+		border-style: solid;
+		border-color: transparent transparent #eee transparent;
+		z-index: 998;
+	}
 }
 
 .tr-line {
 	border-bottom: 1px solid #e4e4e4;
-
 	&:last-child {
 		border: none;
 	}
-}
-
-.link-update {
-	text-decoration: underline;
 }
