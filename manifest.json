@@ -1,27 +1,32 @@
 {
-	"manifest_version": 3,
-	"name": "PoliceAC",
-	"version": "0.6",
-	"description": "",
-	"permissions": ["activeTab"],
-	"icons": {
-		"16": "icon16.png",
-		"32": "icon32.png",
-		"48": "icon48.png",
-		"64": "icon64.png",
-		"128": "icon128.png"
-	},
-	"content_scripts": [
-		{
-			"matches": ["https://psy.league17.ru/*"],
-			"js": ["jquery.js", "toastr.min.js", "tooltipster.bundle.min.js", "PoliceAC.js"],
-			"css": ["style.css", "regular.css", "toastr.min.css", "tooltipster.bundle.css"]
-		}
-	],
-	"web_accessible_resources": [
-		{
-			"resources": ["fa-regular-400.woff2", "fa-solid-900.woff2"],
-			"matches": ["https://psy.league17.ru/*"]
-		}
-	]
+  "manifest_version": 3,
+  "name": "PoliceAC",
+  "version": "0.7",
+  "description": "",
+  "permissions": ["activeTab"],
+  "icons": {},
+  "content_scripts": [
+    {
+      "matches": ["https://psy.league17.ru/*"],
+      "js": [
+        "src/js/Buttons.js",
+        "src/js/Police.js",
+        "src/js/Event.js",
+        "src/js/Clicker.js"
+      ],
+      "css": ["src/css/all.css", "src/css/style.css"],
+      "type": "module"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/assets/fa-light-300.woff2",
+        "src/assets/fa-solid-900.woff2",
+        "src/assets/fa-duotone-900.woff2",
+        "src/assets/fa-thin-100.woff2"
+      ],
+      "matches": ["https://psy.league17.ru/*"]
+    }
+  ]
 }

@@ -1,0 +1,205 @@
+:root {
+  --background-color-hover: rgba(0, 0, 0, 0.067);
+  --background-color-active: rgba(0, 0, 0, 0.067);
+  --background-color-menu: rgba(112, 117, 121, 0.08);
+  --box-shadow: 0 0.25rem 0.5rem 0.125rem rgba(114, 114, 114, 0.251);
+  --border-radius: 0.75rem;
+  --blur-filter: blur(3px);
+}
+
+.menuPolice {
+  position: absolute;
+  display: flex;
+  color: black;
+  gap: 15px;
+  top: 7px;
+  align-items: center;
+  right: 65px;
+  z-index: 21;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 300ms cubic-bezier(0.2, 0, 0.2, 1),
+    visibility 300ms cubic-bezier(0.2, 0, 0.2, 1);
+}
+.menuPolice.active {
+  opacity: 1;
+  visibility: visible;
+}
+.update-message {
+  position: fixed;
+  right: 20px;
+  top: 60px;
+  z-index: 1000;
+  background-color: var(--background-color-menu);
+  padding: 1rem;
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+  -webkit-backdrop-filter: var(--blur-filter);
+  backdrop-filter: var(--blur-filter);
+}
+.btn-menu-item-input {
+  margin: 0 !important;
+}
+.btn-clicker {
+  display: flex;
+  cursor: pointer;
+  padding: 0.25rem;
+  transform: scale(1);
+  border-radius: 0.375rem;
+  transition: transform 150ms ease-in-out;
+  &:hover {
+    background-color: var(--background-color-hover);
+  }
+}
+.btn-menu-toggle {
+  border: none;
+  padding: 0.5rem;
+  border-radius: 50%;
+  background-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color 150ms ease-in-out;
+}
+.btn-menu-toggle:hover {
+  background-color: var(--background-color-menu);
+}
+.btn-menu-toggle.menu-open {
+  background-color: var(--background-color-menu);
+}
+
+.btn-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem) !important;
+  right: 0;
+  width: max-content;
+  background-color: rgba(255, 255, 255, 0.733);
+  padding: 0.25rem 0;
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+  -webkit-backdrop-filter: var(--blur-filter);
+  backdrop-filter: var(--blur-filter);
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.85);
+  z-index: 21;
+  transition: opacity 150ms cubic-bezier(0.2, 0, 0.2, 1),
+    transform 150ms cubic-bezier(0.2, 0, 0.2, 1),
+    visibility 150ms cubic-bezier(0.2, 0, 0.2, 1);
+}
+.btn-menu.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+.btn-menu.bottom-left {
+  transform-origin: right top;
+  inset-block: 100% auto;
+  inset-inline: auto 0;
+}
+.btn-menu.bottom-right {
+  transform-origin: left top;
+  inset-block: 100% auto;
+  inset-inline: 0 auto;
+}
+
+.btn-menu-item {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  margin: 0 0.25rem;
+  padding: 0.25rem;
+  transform: scale(1);
+  border-radius: 0.375rem;
+  transition: transform 150ms ease-in-out;
+}
+.btn-menu-item .icon {
+  margin-inline: 0.5rem 1.25rem;
+}
+.btn-menu-item:hover {
+  background-color: var(--background-color-hover);
+}
+.btn-menu-item:active {
+  background-color: var(--background-color-active);
+  transform: scale(0.98);
+}
+
+.c-ripple {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.c-ripple__circle {
+  display: block;
+  position: absolute;
+  border-radius: inherit;
+  background-color: var(--background-color-hover);
+  transform: scale(0);
+  animation: ripple-effect 0.7s forwards;
+}
+.wrapper-event {
+  position: relative;
+}
+.animate-event {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+.event-icon {
+  position: absolute;
+  top: -1rem;
+  font-size: 1rem;
+  transform-origin: center;
+  animation: fallAndSwing 5s linear infinite;
+  animation-delay: var(--animation-delay);
+  left: var(--start-position);
+  --x-offset: 0px;
+  z-index: 1900;
+}
+
+@keyframes ripple-effect {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes fallAndSwing {
+  0% {
+    transform: translate(0, -1rem) rotate(-15deg);
+    opacity: 1;
+  }
+  20% {
+    transform: translate(calc(var(--x-offset) * 0.2), calc(20% + 0.2rem))
+      rotate(15deg);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(calc(var(--x-offset) * 0.4), calc(40% + 0.6rem))
+      rotate(-15deg);
+    opacity: 0.9;
+  }
+  60% {
+    transform: translate(calc(var(--x-offset) * 0.6), calc(60% + 1rem))
+      rotate(15deg);
+    opacity: 0.8;
+  }
+  80% {
+    transform: translate(calc(var(--x-offset) * 0.8), calc(80% + 1.5rem))
+      rotate(-15deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(var(--x-offset), calc(100% + 2.5rem)) rotate(15deg);
+    opacity: 0;
+  }
+}
