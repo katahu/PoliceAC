@@ -1,6 +1,5 @@
 let userTime = localStorage.getItem("userTime") || "1000";
-let autoTransition =
-  JSON.parse(localStorage.getItem("autoTransition")) || false;
+let autoTransition = JSON.parse(localStorage.getItem("autoTransition")) || false;
 let direction = JSON.parse(localStorage.getItem("direction")) || false;
 
 function createRippleEffect(elem) {
@@ -16,9 +15,7 @@ function createRippleEffect(elem) {
     const ripple = document.createElement("div");
     ripple.classList.add("c-ripple__circle");
     const rect = elem.getBoundingClientRect();
-    const diagonal = Math.sqrt(
-      Math.pow(rect.width, 2) + Math.pow(rect.height, 2)
-    );
+    const diagonal = Math.sqrt(Math.pow(rect.width, 2) + Math.pow(rect.height, 2));
     const size = diagonal * 2;
     const x = clientX - rect.left - size / 2;
     const y = clientY - rect.top - size / 2;
@@ -57,10 +54,8 @@ class MenuController {
     this.elements.forEach((element) => {
       const rect = element.getBoundingClientRect();
       const { clientX, clientY } = e;
-      const diffX =
-        clientX >= rect.right ? clientX - rect.right : rect.left - clientX;
-      const diffY =
-        clientY >= rect.bottom ? clientY - rect.bottom : rect.top - clientY;
+      const diffX = clientX >= rect.right ? clientX - rect.right : rect.left - clientX;
+      const diffY = clientY >= rect.bottom ? clientY - rect.bottom : rect.top - clientY;
       if (diffX >= 30 || diffY >= 30) {
         this.close(element);
       }
@@ -157,22 +152,13 @@ function ButtonMenuItem(option) {
     iconElement.classList.add("icon", ...icon.split(" "));
     if (group === "direction") {
       if (iconElement.classList.contains("fa-up")) {
-        iconElement.classList.replace(
-          "fa-light",
-          direction ? "fa-solid" : "fa-light"
-        );
+        iconElement.classList.replace("fa-light", direction ? "fa-solid" : "fa-light");
       } else if (iconElement.classList.contains("fa-down")) {
-        iconElement.classList.replace(
-          "fa-light",
-          !direction ? "fa-solid" : "fa-light"
-        );
+        iconElement.classList.replace("fa-light", !direction ? "fa-solid" : "fa-light");
       }
     }
     if (group === "autoTransition") {
-      iconElement.classList.replace(
-        "fa-light",
-        autoTransition ? "fa-solid" : "fa-light"
-      );
+      iconElement.classList.replace("fa-light", autoTransition ? "fa-solid" : "fa-light");
     }
     el.prepend(iconElement);
   }
@@ -208,13 +194,9 @@ function ButtonMenuItem(option) {
 function toggleIcon(el, group) {
   const icon = el.querySelector("i");
   if (group === "autoTransition") {
-    ["fa-light", "fa-solid"].forEach((className) =>
-      icon.classList.toggle(className)
-    );
+    ["fa-light", "fa-solid"].forEach((className) => icon.classList.toggle(className));
   } else if (group === "direction") {
-    const buttons = el.parentElement.querySelectorAll(
-      `.btn-menu-item[data-group="direction"] i`
-    );
+    const buttons = el.parentElement.querySelectorAll(`.btn-menu-item[data-group="direction"] i`);
     buttons.forEach((btnIcon) => {
       btnIcon.classList.remove("fa-solid");
       btnIcon.classList.add("fa-light");
@@ -226,8 +208,7 @@ function toggleIcon(el, group) {
 
 const timeMenu = [
   {
-    regularText:
-      '<input type="text" placeholder="Время задержки (мс)" class="btn-menu-item-input">',
+    regularText: '<input type="text" placeholder="Время задержки (мс)" class="btn-menu-item-input">',
     onClick: () => {},
   },
 ];
@@ -283,7 +264,7 @@ buttonStart.classList.add("btn-clicker");
 buttonStart.textContent = "Старт";
 createRippleEffect(buttonStart);
 buttonStart.addEventListener("click", () => {
-  Clicker();
+  start();
 });
 
 const buttonStop = document.createElement("div");
@@ -291,15 +272,15 @@ buttonStop.classList.add("btn-clicker");
 buttonStop.textContent = "Пауза";
 createRippleEffect(buttonStop);
 buttonStop.addEventListener("click", () => {
-  pauseClicker();
+  pause();
 });
 
 function keydownHandler(event) {
   if (event.altKey && event.key === "1") {
-    Clicker();
+    start();
   }
   if (event.altKey && event.key === "2") {
-    pauseClicker();
+    pause();
   }
 }
 
@@ -309,10 +290,6 @@ menuPolice.classList.add("menuPolice");
 topNav.append(menuPolice);
 menuPolice.append(buttonTime, buttonDirection, buttonStart, buttonStop);
 
-const usersSection = document.getElementById("usersSection");
-if (usersSection) {
-  startMenu();
-}
 function startMenu() {
   if (!versionPlugin) return;
   menuPolice.classList.add("active");

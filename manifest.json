@@ -1,19 +1,14 @@
 {
   "manifest_version": 3,
   "name": "PoliceAC",
-  "version": "0.7",
+  "version": "0.8",
   "description": "",
   "permissions": ["activeTab"],
   "icons": {},
   "content_scripts": [
     {
       "matches": ["https://psy.league17.ru/*"],
-      "js": [
-        "src/js/Buttons.js",
-        "src/js/Police.js",
-        "src/js/Event.js",
-        "src/js/Clicker.js"
-      ],
+      "js": ["src/js/Buttons.js", "src/js/Police.js", "src/js/Event.js", "src/js/Clicker.js"],
       "css": ["src/css/all.css", "src/css/style.css"],
       "type": "module"
     }

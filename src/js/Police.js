@@ -25,15 +25,8 @@ function fetchData() {
 
       data.forEach((array) => {
         Object.keys(array).forEach((key) => {
-          if (
-            key === "Уровень" ||
-            key === "Проценты" ||
-            key === "КрафтовыеПЦ"
-          ) {
-            cachedServerData.set(
-              key,
-              new Map(array[key].map((item) => [item, {}]))
-            );
+          if (key === "Уровень" || key === "Проценты" || key === "КрафтовыеПЦ") {
+            cachedServerData.set(key, new Map(array[key].map((item) => [item, {}])));
           } else {
             cachedServerData.set(
               key,
@@ -60,8 +53,7 @@ function getCachedData(key, subKey) {
 }
 
 function updateTextCard(tradeCard, data) {
-  tradeCard.querySelector('[data-bind="text: memoFormated"]').textContent =
-    data || "N/A";
+  tradeCard.querySelector('[data-bind="text: memoFormated"]').textContent = data || "N/A";
   deletePrefix(tradeCard);
 }
 
@@ -72,10 +64,7 @@ function deletePrefix(tradeCard) {
 
   memoElements.forEach((memoDiv) => {
     Array.from(memoDiv.childNodes).forEach((childNode) => {
-      if (
-        childNode.nodeType === Node.TEXT_NODE &&
-        childNode.nodeValue.trim() === "m:"
-      ) {
+      if (childNode.nodeType === Node.TEXT_NODE && childNode.nodeValue.trim() === "m:") {
         memoDiv.removeChild(childNode);
       }
     });
@@ -85,21 +74,15 @@ function deletePrefix(tradeCard) {
 }
 
 function getActiveElement(tradeCard) {
-  const itemTitleElement = tradeCard.querySelector(
-    '[data-bind="text: itemTitle"]'
-  );
+  const itemTitleElement = tradeCard.querySelector('[data-bind="text: itemTitle"]');
   const itemTitle = itemTitleElement ? itemTitleElement.textContent.trim() : "";
 
   const itemEggElement = tradeCard.querySelector(
     "[data-bind=\"text: itemTitle() + ' ' + '#' + app.addnuls(eggSp_id(), 3) + ' ' + eggPokename()\"]"
   );
-  const memoFormattedElement = tradeCard.querySelector(
-    '[data-bind="text: memoFormated"]'
-  );
+  const memoFormattedElement = tradeCard.querySelector('[data-bind="text: memoFormated"]');
 
-  const memoText = memoFormattedElement
-    ? memoFormattedElement.textContent.trim()
-    : null;
+  const memoText = memoFormattedElement ? memoFormattedElement.textContent.trim() : null;
 
   if (itemEggElement) {
     return {
@@ -172,10 +155,7 @@ function handleTitleElement(itemTitle, memoFormattedElement, tradeCard) {
     processToy(itemTitle, memoFormattedElement, tradeCard);
     return;
   }
-  if (
-    itemTitle === "Графитовый колокольчик" ||
-    itemTitle === "Украденный Секретный Ящик"
-  ) {
+  if (itemTitle === "Графитовый колокольчик" || itemTitle === "Украденный Секретный Ящик") {
     processGraphiteBell(itemTitle, memoFormattedElement, tradeCard);
     return;
   }
@@ -208,10 +188,7 @@ function processDropObject(itemTitle, memoFormattedElement, tradeCard) {
     const level = memoFormattedElement.charAt(0);
     const currentDurability = memoFormattedElement.slice(1, 3);
     const maxDurability = memoFormattedElement.slice(3);
-    updateTextCard(
-      tradeCard,
-      `уровень ${level}, [${currentDurability}/${maxDurability}]`
-    );
+    updateTextCard(tradeCard, `уровень ${level}, [${currentDurability}/${maxDurability}]`);
   }
 }
 
@@ -229,10 +206,7 @@ function processPercent(itemTitle, memoFormattedElement, tradeCard) {
       maxDurability = memoFormattedElement.slice(5, 7);
     }
 
-    updateTextCard(
-      tradeCard,
-      `+${bonusPercent}% [${currentDurability}/${maxDurability}]`
-    );
+    updateTextCard(tradeCard, `+${bonusPercent}% [${currentDurability}/${maxDurability}]`);
   }
 }
 
@@ -293,9 +267,7 @@ function processGraphiteBell(itemTitle, memoFormattedElement, tradeCard) {
   const currentDate = new Date();
 
   const targetMoscowDate = new Date(date.getTime() + 3 * 60 * 60 * 1000);
-  const currentMoscowDate = new Date(
-    currentDate.getTime() + 3 * 60 * 60 * 1000
-  );
+  const currentMoscowDate = new Date(currentDate.getTime() + 3 * 60 * 60 * 1000);
 
   const totalDiff = targetMoscowDate.getTime() - currentMoscowDate.getTime();
   const daysDiff = Math.abs(totalDiff) / (1000 * 60 * 60 * 24);
@@ -303,15 +275,18 @@ function processGraphiteBell(itemTitle, memoFormattedElement, tradeCard) {
   const percentage = (daysDiff / 31) * 100;
 
   const roundedPercentage = Math.round(percentage);
-  console.log(roundedPercentage);
-  updateTextCard(tradeCard, `${roundedPercentage}%`);
+
+  if (roundedPercentage > 100) {
+    updateTextCard(tradeCard, "0%");
+  } else {
+    updateTextCard(tradeCard, `${roundedPercentage}%`);
+  }
 }
+
 observeDynamicTradeCards();
 
 function extractTable() {
-  const rows = Array.from(
-    document.querySelectorAll('tr[data-bind*="foreach: $parent.columns"]')
-  );
+  const rows = Array.from(document.querySelectorAll('tr[data-bind*="foreach: $parent.columns"]'));
 
   rowsMap.clear();
 
@@ -357,10 +332,7 @@ function extractTable() {
         if (item === "Витамины" || item === "Пилюля") {
           processVitaminTable(data);
         }
-        if (
-          item === "Графитовый колокольчик" ||
-          item === "Украденный Секретный Ящик"
-        ) {
+        if (item === "Графитовый колокольчик" || item === "Украденный Секретный Ящик") {
           processGraphiteBellTable(data);
         }
         if (
@@ -395,10 +367,7 @@ function handleGeneralTable(data) {
     if (/^\d{5}$/.test(memo)) {
       const currentDurability = memo.slice(1, 3);
       const totalDurability = memo.slice(3, 5);
-      updateItemTextContent(
-        itemTable,
-        `[${currentDurability}/${totalDurability}]`
-      );
+      updateItemTextContent(itemTable, `[${currentDurability}/${totalDurability}]`);
     }
   }
 }
@@ -417,10 +386,7 @@ function processDropObjectTable(data) {
     const level = memo.charAt(0);
     const currentDurability = memo.slice(1, 3);
     const totalDurability = memo.slice(3);
-    updateItemTextContent(
-      itemTable,
-      `уровень ${level}, [${currentDurability}/${totalDurability}]`
-    );
+    updateItemTextContent(itemTable, `уровень ${level}, [${currentDurability}/${totalDurability}]`);
   }
 }
 
@@ -430,10 +396,7 @@ function processFossiTable(data) {
     const pokemon = memo.slice(0, 3);
     const percentage = memo.slice(3, 5);
     const cachedServerData = getCachedData("Яйцо", pokemon);
-    updateItemTextContent(
-      itemTable,
-      ` ${cachedServerData.item} ${percentage}% ДНК`
-    );
+    updateItemTextContent(itemTable, ` ${cachedServerData.item} ${percentage}% ДНК`);
   }
 }
 
@@ -451,10 +414,7 @@ function processPercentTable(data) {
       currentDurability = memo.slice(3, 5);
       maxDurability = memo.slice(5, 7);
     }
-    updateItemTextContent(
-      itemTable,
-      `+${bonusPercent}% [${currentDurability}/${maxDurability}]`
-    );
+    updateItemTextContent(itemTable, `+${bonusPercent}% [${currentDurability}/${maxDurability}]`);
   }
 }
 
@@ -477,19 +437,19 @@ function processGraphiteBellTable(data) {
   const currentDate = new Date();
 
   const moscowTZ = "Europe/Moscow";
-  const targetMoscowDate = new Date(
-    date.toLocaleString("en-US", { timeZone: moscowTZ })
-  );
-  const currentMoscowDate = new Date(
-    currentDate.toLocaleString("en-US", { timeZone: moscowTZ })
-  );
+  const targetMoscowDate = new Date(date.toLocaleString("en-US", { timeZone: moscowTZ }));
+  const currentMoscowDate = new Date(currentDate.toLocaleString("en-US", { timeZone: moscowTZ }));
 
   const totalDiff = targetMoscowDate.getTime() - currentMoscowDate.getTime();
   const daysDiff = Math.abs(totalDiff) / (1000 * 60 * 60 * 24);
 
   const percentage = Math.min(100, Math.max(0, (daysDiff / 31) * 100));
   const roundedPercentage = Math.round(percentage);
-  updateItemTextContent(itemTable, `${roundedPercentage}%`);
+  if (roundedPercentage > 100) {
+    updateItemTextContent(traditemTableeCard, "0%");
+  } else {
+    updateItemTextContent(itemTable, `${roundedPercentage}%`);
+  }
 }
 function observeDynamicTradeCards() {
   if (tradeCardsObserver) {
@@ -532,11 +492,7 @@ function observeDynamicMain() {
 
       mutationsList.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
-          if (
-            node.nodeType === 1 &&
-            node.tagName === "TR" &&
-            !node.hasAttribute("style")
-          ) {
+          if (node.nodeType === 1 && node.tagName === "TR" && !node.hasAttribute("style")) {
             relevantChange = true;
           }
         });
@@ -587,7 +543,6 @@ function observeDynamicMain() {
           }
           if (node.id === "tradesSection") {
             observeDynamicTradeCards();
-            startMenu();
           }
         }
       });
@@ -598,7 +553,6 @@ function observeDynamicMain() {
             stopObserveDynamicTradeCards();
           }
           if (node.id === "tradesSection") {
-            stopMenu();
             stopObserveDynamicTradeCards();
           }
         }

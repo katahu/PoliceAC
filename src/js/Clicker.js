@@ -1,83 +1,77 @@
-let arrTable = [];
-let initial = false;
-let currentIndex = 0;
+let isActive = false;
 let isPaused = false;
-let isRunning = false;
+let isInitial = false;
+let rowsCache = null;
+let currentIndex = null;
 
-function Initial() {
-  if (initial) return;
-  initial = true;
-  const table = document.querySelectorAll(
-    'table[data-bind="foreach: currentTrades"] tr'
-  );
-  if (table.length === 0) {
-    initial = false;
-    return;
+function initializeRows() {
+  if (!isInitial || !rowsCache) {
+    const rows = document.querySelectorAll('table[data-bind="foreach: currentTrades"] tr');
+    if (rows.length > 0) {
+      rowsCache = Array.from(rows);
+    }
+    isInitial = true;
   }
-  table.forEach((row, index) => {
-    arrTable.push({ row, index });
-  });
-  if (direction) {
-    currentIndex = arrTable.length - 1;
-  } else {
-    currentIndex = 0;
-  }
+  return rowsCache;
 }
 
-async function Clicker() {
-  if (isRunning) {
+function start() {
+  if (isActive) return;
+
+  const rows = initializeRows();
+  if (!rows || rows.length === 0) {
     return;
   }
-  isRunning = true;
+
+  isActive = true;
   isPaused = false;
-  Initial();
 
-  if (direction) {
-    for (let i = currentIndex; i >= 0; i--) {
-      while (isPaused) {
-        await new Promise((resolve) => setTimeout(resolve));
-      }
-      if (i !== currentIndex) await observeSingleMutation();
-      await new Promise((resolve) => setTimeout(resolve, userTime));
-      if (isPaused) break;
-      arrTable[i].row.click();
-      currentIndex = i;
+  const startIndex = currentIndex !== null ? currentIndex : direction ? rows.length - 1 : 0;
+  const endIndex = direction ? -1 : rows.length;
+  const step = direction ? -1 : 1;
 
-      if (i === 0) {
+  async function clickRow(index) {
+    if (isPaused || index === endIndex) {
+      if (!isPaused) {
+        isActive = false;
         reset();
       }
+      return;
     }
-    if (currentIndex < 0) reset();
-  } else {
-    for (let i = currentIndex; i < arrTable.length; i++) {
-      while (isPaused) {
-        await new Promise((resolve) => setTimeout(resolve));
-      }
-      if (i !== currentIndex) await observeSingleMutation();
-      await new Promise((resolve) => setTimeout(resolve, userTime));
-      if (isPaused) break;
-      arrTable[i].row.click();
-      currentIndex = i;
 
-      if (i === arrTable.length - 1) {
-        reset();
-      }
+    const row = rows[index];
+    if (row) {
+      row.click();
+      await observeSingleMutation();
+    } else {
     }
+
+    currentIndex = index;
+    setTimeout(() => clickRow(index + step), userTime);
   }
-  isRunning = false;
+
+  clickRow(startIndex);
 }
 
-function pauseClicker() {
+function pause() {
+  if (!isActive) return;
   isPaused = true;
+  isActive = false;
+}
+
+function resume() {
+  if (!isPaused) return;
+  start();
 }
 
 function reset() {
-  currentIndex = direction ? arrTable.length - 1 : 0;
-  arrTable = [];
-  initial = false;
-  isRunning = false;
+  isPaused = false;
+  isActive = false;
+  isInitial = false;
+  rowsCache = null;
+  currentIndex = null;
   if (!autoTransition) return;
-  paginationList();
+  pagination();
 }
 
 async function observeSingleMutation() {
@@ -91,7 +85,6 @@ async function observeSingleMutation() {
         if (mutation.type === "childList") {
           observer.disconnect();
           resolve();
-          break;
         }
       }
     };
@@ -101,7 +94,7 @@ async function observeSingleMutation() {
   });
 }
 
-function paginationList() {
+function pagination() {
   const pagination = document.querySelector(".pagination");
   if (!pagination) return;
 
@@ -119,11 +112,61 @@ function paginationList() {
     const targetLink = targetPage.querySelector("a");
     if (targetLink) {
       targetLink.click();
-      resetPaginaion();
     }
   }
-  function resetPaginaion() {
-    arrTable = [];
-    initial = false;
-  }
 }
+
+function visualize() {
+  let observer;
+
+  function observeForAddition() {
+    observer = new MutationObserver((mutationsList) => {
+      mutationsList.forEach((mutation) => {
+        if (mutation.type === "childList") {
+          mutation.addedNodes.forEach((node) => {
+            if (node.id === "tradesSection") {
+              observer.disconnect();
+
+              setTimeout(() => {
+                startMenu();
+              }, 100);
+
+              observeForRemoval(node);
+            }
+          });
+        }
+      });
+    });
+
+    const targetNode = document.body;
+    const config = { childList: true, subtree: true };
+    observer.observe(targetNode, config);
+  }
+
+  function observeForRemoval(targetNode) {
+    observer = new MutationObserver((mutationsList) => {
+      mutationsList.forEach((mutation) => {
+        if (mutation.type === "childList") {
+          mutation.removedNodes.forEach((node) => {
+            if (node === targetNode) {
+              observer.disconnect();
+              stopMenu();
+              reset();
+              observeForAddition();
+            }
+          });
+        }
+      });
+    });
+
+    const parentNode = targetNode.parentNode;
+    if (parentNode) {
+      const config = { childList: true };
+      observer.observe(parentNode, config);
+    }
+  }
+
+  observeForAddition();
+}
+
+visualize();
