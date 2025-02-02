@@ -6,7 +6,9 @@
   --border-radius: 0.75rem;
   --blur-filter: blur(3px);
 }
-
+a[style="color: rgb(0, 90, 173); text-decoration: line-through;"] {
+  text-decoration: none !important;
+}
 .menuPolice {
   position: absolute;
   display: flex;
@@ -18,8 +20,7 @@
   z-index: 21;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 300ms cubic-bezier(0.2, 0, 0.2, 1),
-    visibility 300ms cubic-bezier(0.2, 0, 0.2, 1);
+  transition: opacity 300ms cubic-bezier(0.2, 0, 0.2, 1), visibility 300ms cubic-bezier(0.2, 0, 0.2, 1);
 }
 .menuPolice.active {
   opacity: 1;
@@ -41,8 +42,9 @@
   margin: 0 !important;
 }
 .btn-clicker {
-  display: flex;
   cursor: pointer;
+  display: flex;
+  align-items: center;
   padding: 0.25rem;
   transform: scale(1);
   border-radius: 0.375rem;
@@ -51,7 +53,11 @@
     background-color: var(--background-color-hover);
   }
 }
+.btn-clicker .icon {
+  margin-inline: 0.3rem;
+}
 .btn-menu-toggle {
+  cursor: pointer;
   border: none;
   padding: 0.5rem;
   border-radius: 50%;
@@ -84,8 +90,7 @@
   visibility: hidden;
   transform: scale(0.85);
   z-index: 21;
-  transition: opacity 150ms cubic-bezier(0.2, 0, 0.2, 1),
-    transform 150ms cubic-bezier(0.2, 0, 0.2, 1),
+  transition: opacity 150ms cubic-bezier(0.2, 0, 0.2, 1), transform 150ms cubic-bezier(0.2, 0, 0.2, 1),
     visibility 150ms cubic-bezier(0.2, 0, 0.2, 1);
 }
 .btn-menu.active {
@@ -124,7 +129,14 @@
   background-color: var(--background-color-active);
   transform: scale(0.98);
 }
-
+.no-scale {
+  &:active {
+    transform: scale(1);
+  }
+  &:hover {
+    background: transparent;
+  }
+}
 .c-ripple {
   position: absolute;
   inset: 0;
@@ -179,23 +191,19 @@
     opacity: 1;
   }
   20% {
-    transform: translate(calc(var(--x-offset) * 0.2), calc(20% + 0.2rem))
-      rotate(15deg);
+    transform: translate(calc(var(--x-offset) * 0.2), calc(20% + 0.2rem)) rotate(15deg);
     opacity: 1;
   }
   40% {
-    transform: translate(calc(var(--x-offset) * 0.4), calc(40% + 0.6rem))
-      rotate(-15deg);
+    transform: translate(calc(var(--x-offset) * 0.4), calc(40% + 0.6rem)) rotate(-15deg);
     opacity: 0.9;
   }
   60% {
-    transform: translate(calc(var(--x-offset) * 0.6), calc(60% + 1rem))
-      rotate(15deg);
+    transform: translate(calc(var(--x-offset) * 0.6), calc(60% + 1rem)) rotate(15deg);
     opacity: 0.8;
   }
   80% {
-    transform: translate(calc(var(--x-offset) * 0.8), calc(80% + 1.5rem))
-      rotate(-15deg);
+    transform: translate(calc(var(--x-offset) * 0.8), calc(80% + 1.5rem)) rotate(-15deg);
     opacity: 0.5;
   }
   100% {

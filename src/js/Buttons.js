@@ -112,41 +112,68 @@ function ButtonMenu(option) {
 }
 
 function ButtonToggle(option) {
-  const { icon, rp, onClick, buttons, onClose, menuDirection } = option;
-  const button = document.createElement("button");
-  button.classList.add("btn-menu-toggle");
+  const { icon, className, text, rp, onClick, buttons, onClose, menuDirection } = option;
+  const button = document.createElement("div");
+
   if (icon) {
     const iconElement = document.createElement("i");
     iconElement.classList.add(...icon.split(" "));
-    button.appendChild(iconElement);
+    button.append(iconElement);
   }
+  if (className) {
+    button.classList.add(className);
+  }
+
+  if (text) {
+    const textElement = document.createElement("span");
+    textElement.textContent = text;
+    button.append(textElement);
+  }
+
   if (rp) {
     createRippleEffect(button);
   }
-  const menuElement = ButtonMenu({ buttons, menuDirection });
-  button.append(menuElement);
-  button.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (onClick) onClick(e);
-    if (button.classList.contains("menu-open")) {
-      controller.close();
-    } else {
-      controller.openBtnMenu(menuElement, onClose);
-    }
-  });
-  button.addEventListener("mouseenter", () => {
-    if (!button.classList.contains("menu-open")) {
-      controller.openBtnMenu(menuElement, onClose);
-    }
-  });
+
+  if (buttons && buttons.length > 0) {
+    const menuElement = ButtonMenu({ buttons, menuDirection });
+    button.append(menuElement);
+
+    button.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (onClick) onClick(e);
+      if (button.classList.contains("menu-open")) {
+        controller.close();
+      } else {
+        controller.openBtnMenu(menuElement, onClose);
+      }
+    });
+
+    button.addEventListener("mouseenter", () => {
+      if (!button.classList.contains("menu-open")) {
+        controller.openBtnMenu(menuElement, onClose);
+      }
+    });
+  } else {
+    button.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (onClick) onClick(e);
+    });
+  }
+
   return button;
 }
 
 function ButtonMenuItem(option) {
-  const { icon, text, regularText, group, onClick } = option;
+  const { icon, className, text, regularText, group, onClick } = option;
   const el = document.createElement("div");
   el.classList.add("btn-menu-item");
-  el.setAttribute("data-group", group);
+  if (className) {
+    el.classList.add(className);
+  }
+  if (group) {
+    el.setAttribute("data-group", group);
+  }
+
   if (icon) {
     const iconElement = document.createElement("i");
     iconElement.classList.add("icon", ...icon.split(" "));
@@ -208,6 +235,7 @@ function toggleIcon(el, group) {
 
 const timeMenu = [
   {
+    className: "no-scale",
     regularText: '<input type="text" placeholder="Время задержки (мс)" class="btn-menu-item-input">',
     onClick: () => {},
   },
@@ -215,6 +243,7 @@ const timeMenu = [
 
 const buttonTime = ButtonToggle({
   icon: "fa-light fa-clock",
+  className: "btn-menu-toggle",
   rp: true,
   onClick: () => {},
   buttons: timeMenu,
@@ -252,27 +281,32 @@ const directionMenu = [
 ];
 
 const buttonDirection = ButtonToggle({
-  icon: "fa-light fa-clipboard-list-check",
+  icon: "fa-light fa-gear",
+  className: "btn-menu-toggle",
   rp: true,
   onClick: () => {},
   buttons: directionMenu,
   menuDirection: "bottom-right",
 });
 
-const buttonStart = document.createElement("div");
-buttonStart.classList.add("btn-clicker");
-buttonStart.textContent = "Старт";
-createRippleEffect(buttonStart);
-buttonStart.addEventListener("click", () => {
-  start();
+const buttonStart = ButtonToggle({
+  icon: "fa-light fa-play icon",
+  text: "Старт",
+  className: "btn-clicker",
+  rp: true,
+  onClick: () => {
+    start();
+  },
 });
 
-const buttonStop = document.createElement("div");
-buttonStop.classList.add("btn-clicker");
-buttonStop.textContent = "Пауза";
-createRippleEffect(buttonStop);
-buttonStop.addEventListener("click", () => {
-  pause();
+const buttonStop = ButtonToggle({
+  icon: "fa-light fa-pause icon",
+  text: "Пауза",
+  className: "btn-clicker",
+  rp: true,
+  onClick: () => {
+    pause();
+  },
 });
 
 function keydownHandler(event) {
@@ -294,6 +328,9 @@ function startMenu() {
   if (!versionPlugin) return;
   menuPolice.classList.add("active");
   document.addEventListener("keydown", keydownHandler);
+  const search = document.querySelector('[data-bind="click: $root.newSearch"]');
+  search.removeEventListener("click", reset);
+  search.addEventListener("click", reset);
 }
 
 function stopMenu() {

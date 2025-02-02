@@ -155,7 +155,11 @@ function handleTitleElement(itemTitle, memoFormattedElement, tradeCard) {
     processToy(itemTitle, memoFormattedElement, tradeCard);
     return;
   }
-  if (itemTitle === "Графитовый колокольчик" || itemTitle === "Украденный Секретный Ящик") {
+  if (
+    itemTitle === "Графитовый колокольчик" ||
+    itemTitle === "Украденный Секретный Ящик" ||
+    itemTitle === "Крепкий орех"
+  ) {
     processGraphiteBell(itemTitle, memoFormattedElement, tradeCard);
     return;
   }
@@ -263,24 +267,18 @@ function processToy(itemTitle, memoFormattedElement, tradeCard) {
   updateTextCard(tradeCard, `${data.item}`);
 }
 function processGraphiteBell(itemTitle, memoFormattedElement, tradeCard) {
-  const date = new Date(memoFormattedElement * 1000);
-  const currentDate = new Date();
+  const totalDays = itemTitle === "Крепкий орех" ? 62 : 31;
+  const endTime = new Date(memoFormattedElement * 1000);
+  const startTime = new Date(endTime);
+  startTime.setDate(startTime.getDate() - totalDays);
 
-  const targetMoscowDate = new Date(date.getTime() + 3 * 60 * 60 * 1000);
-  const currentMoscowDate = new Date(currentDate.getTime() + 3 * 60 * 60 * 1000);
+  const saleTimeText = document.querySelector('.pointer.active span[data-bind="text: dat"]').textContent;
+  const saleTime = new Date(saleTimeText);
 
-  const totalDiff = targetMoscowDate.getTime() - currentMoscowDate.getTime();
-  const daysDiff = Math.abs(totalDiff) / (1000 * 60 * 60 * 24);
+  const elapsedDays = (saleTime - startTime) / (1000 * 60 * 60 * 24);
+  const progress = Math.max(100 - elapsedDays * (100 / totalDays), 0);
 
-  const percentage = (daysDiff / 31) * 100;
-
-  const roundedPercentage = Math.round(percentage);
-
-  if (roundedPercentage > 100) {
-    updateTextCard(tradeCard, "0%");
-  } else {
-    updateTextCard(tradeCard, `${roundedPercentage}%`);
-  }
+  updateTextCard(tradeCard, `${Math.round(progress)}%`);
 }
 
 observeDynamicTradeCards();
@@ -332,7 +330,7 @@ function extractTable() {
         if (item === "Витамины" || item === "Пилюля") {
           processVitaminTable(data);
         }
-        if (item === "Графитовый колокольчик" || item === "Украденный Секретный Ящик") {
+        if (item === "Графитовый колокольчик" || item === "Украденный Секретный Ящик" || item === "Крепкий орех") {
           processGraphiteBellTable(data);
         }
         if (
@@ -430,27 +428,23 @@ function processVitaminTable(data) {
 
   updateItemTextContent(itemTable, ` ${cachedServerData.item}`);
 }
+
 function processGraphiteBellTable(data) {
   const { memo, itemTable } = data;
 
-  const date = new Date(memo * 1000);
-  const currentDate = new Date();
+  const nameItem = itemTable.textContent.trim();
+  const totalDays = nameItem === "Крепкий орех" ? 62 : 31;
 
-  const moscowTZ = "Europe/Moscow";
-  const targetMoscowDate = new Date(date.toLocaleString("en-US", { timeZone: moscowTZ }));
-  const currentMoscowDate = new Date(currentDate.toLocaleString("en-US", { timeZone: moscowTZ }));
+  const endTime = new Date(memo * 1000);
+  const now = new Date();
 
-  const totalDiff = targetMoscowDate.getTime() - currentMoscowDate.getTime();
-  const daysDiff = Math.abs(totalDiff) / (1000 * 60 * 60 * 24);
+  const remainingDays = (endTime - now) / (1000 * 60 * 60 * 24);
 
-  const percentage = Math.min(100, Math.max(0, (daysDiff / 31) * 100));
-  const roundedPercentage = Math.round(percentage);
-  if (roundedPercentage > 100) {
-    updateItemTextContent(traditemTableeCard, "0%");
-  } else {
-    updateItemTextContent(itemTable, `${roundedPercentage}%`);
-  }
+  const progress = Math.max(Math.min((remainingDays / totalDays) * 100, 100), 0);
+
+  updateItemTextContent(itemTable, `${Math.round(progress)}%`);
 }
+
 function observeDynamicTradeCards() {
   if (tradeCardsObserver) {
     return;
