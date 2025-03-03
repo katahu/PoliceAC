@@ -11005,8 +11005,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url(../webfonts/fa-brands-400.woff2) format("woff2"),
-    url(../webfonts/fa-brands-400.ttf) format("truetype");
+  src: url(../webfonts/fa-brands-400.woff2) format("woff2"), url(../webfonts/fa-brands-400.ttf) format("truetype");
 }
 .fa-brands,
 .fab {
@@ -12533,8 +12532,7 @@
   font-style: normal;
   font-weight: 900;
   font-display: block;
-  src: url(../webfonts/fa-duotone-900.woff2) format("woff2"),
-    url(../webfonts/fa-duotone-900.ttf) format("truetype");
+  src: url(../webfonts/fa-duotone-900.woff2) format("woff2"), url(../webfonts/fa-duotone-900.ttf) format("truetype");
 }
 .fa-duotone,
 .fad {
@@ -27792,8 +27790,7 @@
   font-style: normal;
   font-weight: 300;
   font-display: block;
-  src: url("chrome-extension://__MSG_@@extension_id__/src/assets/fa-light-300.woff2")
-    format("woff2");
+  src: url("chrome-extension://__MSG_@@extension_id__/src/assets/fa-light-300.woff2") format("woff2");
 }
 .fa-light,
 .fal {
@@ -27819,8 +27816,7 @@
   font-style: normal;
   font-weight: 900;
   font-display: block;
-  src: url("chrome-extension://__MSG_@@extension_id__/src/assets/fa-duotone-900.woff2")
-    format("woff2");
+  src: url("chrome-extension://__MSG_@@extension_id__/src/assets/fa-duotone-900.woff2") format("woff2");
 }
 .fa-duotone,
 .fad {
@@ -27837,8 +27833,7 @@
   font-style: normal;
   font-weight: 100;
   font-display: block;
-  src: url("chrome-extension://__MSG_@@extension_id__/src/assets/fa-thin-100.woff2")
-    format("woff2");
+  src: url("chrome-extension://__MSG_@@extension_id__/src/assets/fa-thin-100.woff2") format("woff2");
 }
 .fa-thin,
 .fat {

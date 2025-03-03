@@ -3,7 +3,6 @@ let versionPlugin = false;
 let cachedServerData = new Map();
 let rowsMap = new Map();
 let tradeCardsObserver = null;
-
 function fetchData() {
   fetch("https://59c87fe2c473d859.mokky.dev/arrItems")
     .then((response) => response.json())
@@ -74,6 +73,7 @@ function deletePrefix(tradeCard) {
 }
 
 function getActiveElement(tradeCard) {
+  if (!decode) return;
   const itemTitleElement = tradeCard.querySelector('[data-bind="text: itemTitle"]');
   const itemTitle = itemTitleElement ? itemTitleElement.textContent.trim() : "";
 
@@ -123,49 +123,38 @@ function updateTradeCardDetails(tradeCard) {
 }
 
 function handleTitleElement(itemTitle, memoFormattedElement, tradeCard) {
-  const levelData = getCachedData("Уровень", itemTitle);
-  if (levelData) {
-    processDropObject(itemTitle, memoFormattedElement, tradeCard);
+  const handlers = new Map([
+    ["Уровень", processDropObject],
+    ["КрафтовыеПЦ", processPercent],
+    ["Проценты", processPercentClass],
+    ["Витамины", processVitamin],
+    ["Пилюля", processVitamin],
+    ["Окаменелость", processFossi],
+    ["Игрушка", processToy],
+    ["Графитовый колокольчик", processGraphiteBell],
+    ["Украденный Секретный Ящик", processGraphiteBell],
+    ["Крепкий орех", processGraphiteBell],
+  ]);
+
+  const skipCacheKeys = new Set(["Графитовый колокольчик", "Украденный Секретный Ящик", "Крепкий орех"]);
+
+  if (handlers.has(itemTitle)) {
+    handlers.get(itemTitle)(itemTitle, memoFormattedElement, tradeCard);
     return;
   }
 
-  const percentCraftData = getCachedData("КрафтовыеПЦ", itemTitle);
-  if (percentCraftData) {
-    processPercent(itemTitle, memoFormattedElement, tradeCard);
-    return;
+  for (const [key, handler] of handlers.entries()) {
+    if (!skipCacheKeys.has(key)) {
+      const data = getCachedData(key, itemTitle);
+      if (data) {
+        handler(itemTitle, memoFormattedElement, tradeCard);
+        return;
+      }
+    }
   }
 
-  const percentData = getCachedData("Проценты", itemTitle);
-  if (percentData) {
-    processPercentClass(itemTitle, memoFormattedElement, tradeCard);
-    return;
-  }
-
-  if (itemTitle === "Витамины" || itemTitle === "Пилюля") {
-    processVitamin(itemTitle, memoFormattedElement, tradeCard);
-    return;
-  }
-
-  if (itemTitle === "Окаменелость") {
-    processFossi(itemTitle, memoFormattedElement, tradeCard);
-    return;
-  }
-
-  if (itemTitle === "Игрушка") {
-    processToy(itemTitle, memoFormattedElement, tradeCard);
-    return;
-  }
-  if (
-    itemTitle === "Графитовый колокольчик" ||
-    itemTitle === "Украденный Секретный Ящик" ||
-    itemTitle === "Крепкий орех"
-  ) {
-    processGraphiteBell(itemTitle, memoFormattedElement, tradeCard);
-    return;
-  }
   handleGeneral(itemTitle, memoFormattedElement, tradeCard);
 }
-
 function handleGeneral(itemTitle, memoFormattedElement, tradeCard) {
   const matchingItem = getCachedData(itemTitle, memoFormattedElement);
   if (matchingItem) {
@@ -272,7 +261,9 @@ function processGraphiteBell(itemTitle, memoFormattedElement, tradeCard) {
   const startTime = new Date(endTime);
   startTime.setDate(startTime.getDate() - totalDays);
 
-  const saleTimeText = document.querySelector('.pointer.active span[data-bind="text: dat"]').textContent;
+  const saleTimeElement = document.querySelector('.pointer.active span[data-bind="text: dat"]');
+  if (!saleTimeElement) return;
+  const saleTimeText = saleTimeElement.textContent.trim();
   const saleTime = new Date(saleTimeText);
 
   const elapsedDays = (saleTime - startTime) / (1000 * 60 * 60 * 24);
@@ -284,9 +275,25 @@ function processGraphiteBell(itemTitle, memoFormattedElement, tradeCard) {
 observeDynamicTradeCards();
 
 function extractTable() {
+  if (!decode) return;
   const rows = Array.from(document.querySelectorAll('tr[data-bind*="foreach: $parent.columns"]'));
 
   rowsMap.clear();
+
+  const handlers = new Map([
+    ["Проценты", processPercentClassTable],
+    ["Уровень", processDropObjectTable],
+    ["КрафтовыеПЦ", processPercentTable],
+    ["Окаменелость", processFossiTable],
+    ["Игрушка", processToyTable],
+    ["Витамины", processVitaminTable],
+    ["Пилюля", processVitaminTable],
+    ["Графитовый колокольчик", processGraphiteBellTable],
+    ["Украденный Секретный Ящик", processGraphiteBellTable],
+    ["Крепкий орех", processGraphiteBellTable],
+  ]);
+
+  const skipCacheKeys = new Set(["Графитовый колокольчик", "Украденный Секретный Ящик", "Крепкий орех"]);
 
   for (const row of rows) {
     const cells = row.getElementsByTagName("td");
@@ -305,43 +312,20 @@ function extractTable() {
         }
         rowsMap.get(item).push(data);
 
-        const percentData = getCachedData("Проценты", item);
-        if (percentData) {
-          processPercentClassTable(data);
+        if (!skipCacheKeys.has(item)) {
+          for (const [key, handler] of handlers.entries()) {
+            const cachedData = getCachedData(key, item);
+            if (cachedData) {
+              handler(data);
+            }
+          }
         }
 
-        const levelData = getCachedData("Уровень", item);
-        if (levelData) {
-          processDropObjectTable(data);
+        if (handlers.has(item)) {
+          handlers.get(item)(data);
         }
 
-        const percentCraftData = getCachedData("КрафтовыеПЦ", item);
-        if (percentCraftData) {
-          processPercentTable(data);
-        }
-
-        if (item === "Окаменелость") {
-          processFossiTable(data);
-        }
-
-        if (item === "Игрушка") {
-          processToyTable(data);
-        }
-        if (item === "Витамины" || item === "Пилюля") {
-          processVitaminTable(data);
-        }
-        if (item === "Графитовый колокольчик" || item === "Украденный Секретный Ящик" || item === "Крепкий орех") {
-          processGraphiteBellTable(data);
-        }
-        if (
-          !percentData &&
-          !levelData &&
-          !percentCraftData &&
-          item !== "Окаменелость" &&
-          item !== "Игрушка" &&
-          item !== "Пилюля" &&
-          !item.startsWith("Страница")
-        ) {
+        if (!handlers.has(item) && !skipCacheKeys.has(item) && !item.startsWith("Страница")) {
           handleGeneralTable(data);
         }
       }
@@ -562,4 +546,5 @@ function observeDynamicMain() {
 }
 
 observeDynamicMain();
+
 fetchData();

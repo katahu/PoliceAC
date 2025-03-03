@@ -1,6 +1,12 @@
+function getLocalStorageValue(key, defaultValue) {
+  const stored = localStorage.getItem(key);
+  return stored !== null ? JSON.parse(stored) : defaultValue;
+}
+
 let userTime = localStorage.getItem("userTime") || "1000";
-let autoTransition = JSON.parse(localStorage.getItem("autoTransition")) || false;
-let direction = JSON.parse(localStorage.getItem("direction")) || false;
+let direction = getLocalStorageValue("direction", false);
+let autoTransition = getLocalStorageValue("autoTransition", false);
+let decode = getLocalStorageValue("decode", true);
 
 function createRippleEffect(elem) {
   let rippleContainer = elem.querySelector(".c-ripple");
@@ -164,7 +170,7 @@ function ButtonToggle(option) {
 }
 
 function ButtonMenuItem(option) {
-  const { icon, className, text, regularText, group, onClick } = option;
+  const { icon, className, text, regularText, checkbox, group, localStorageKey, onClick } = option;
   const el = document.createElement("div");
   el.classList.add("btn-menu-item");
   if (className) {
@@ -184,9 +190,6 @@ function ButtonMenuItem(option) {
         iconElement.classList.replace("fa-light", !direction ? "fa-solid" : "fa-light");
       }
     }
-    if (group === "autoTransition") {
-      iconElement.classList.replace("fa-light", autoTransition ? "fa-solid" : "fa-light");
-    }
     el.prepend(iconElement);
   }
   if (text || regularText) {
@@ -200,6 +203,25 @@ function ButtonMenuItem(option) {
     }
     el.appendChild(textElement);
   }
+  if (checkbox) {
+    const label = document.createElement("label");
+    label.classList.add("toggle");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+
+    input.checked = getLocalStorageValue(localStorageKey, option.defaultValue ?? false);
+
+    const slider = document.createElement("span");
+    slider.classList.add("slider");
+    label.append(input, slider);
+    el.append(label);
+
+    input.addEventListener("change", (e) => {
+      localStorage.setItem(localStorageKey, JSON.stringify(e.target.checked));
+      if (option.onClick) option.onClick(e);
+    });
+  }
+
   const inputElement = el.querySelector("input");
   if (inputElement) {
     inputElement.value = userTime;
@@ -211,6 +233,10 @@ function ButtonMenuItem(option) {
   if (onClick) {
     el.addEventListener("click", (e) => {
       e.stopPropagation();
+      const checkbox = el.querySelector('input[type="checkbox"]');
+      if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+      }
       toggleIcon(el, group);
       onClick(e);
     });
@@ -220,16 +246,28 @@ function ButtonMenuItem(option) {
 
 function toggleIcon(el, group) {
   const icon = el.querySelector("i");
+
   if (group === "autoTransition") {
     ["fa-light", "fa-solid"].forEach((className) => icon.classList.toggle(className));
   } else if (group === "direction") {
-    const buttons = el.parentElement.querySelectorAll(`.btn-menu-item[data-group="direction"] i`);
+    const buttons = el.parentElement.querySelectorAll('.btn-menu-item[data-group="direction"] i');
+
     buttons.forEach((btnIcon) => {
-      btnIcon.classList.remove("fa-solid");
+      btnIcon.classList.remove("fa-solid", "animateUP", "animateDOWN");
       btnIcon.classList.add("fa-light");
     });
+
     icon.classList.remove("fa-light");
     icon.classList.add("fa-solid");
+
+    if (icon.classList.contains("fa-up")) {
+      icon.classList.add("animateUP");
+    } else if (icon.classList.contains("fa-down")) {
+      icon.classList.add("animateDOWN");
+    }
+    setTimeout(() => {
+      icon.classList.remove("animateUP", "animateDOWN");
+    }, 500);
   }
 }
 
@@ -255,6 +293,7 @@ const directionMenu = [
     icon: "fa-light fa-up",
     text: "Вверх",
     group: "direction",
+    defaultValue: true,
     onClick: () => {
       direction = true;
       localStorage.setItem("direction", JSON.stringify(direction));
@@ -264,6 +303,7 @@ const directionMenu = [
     icon: "fa-light fa-down",
     text: "Вниз",
     group: "direction",
+    defaultValue: false,
     onClick: () => {
       direction = false;
       localStorage.setItem("direction", JSON.stringify(direction));
@@ -272,10 +312,23 @@ const directionMenu = [
   {
     icon: "fa-light fa-right-left",
     text: "Автопереход",
-    group: "autoTransition",
+    checkbox: true,
+    localStorageKey: "autoTransition",
+    defaultValue: false,
     onClick: () => {
       autoTransition = !autoTransition;
       localStorage.setItem("autoTransition", JSON.stringify(autoTransition));
+    },
+  },
+  {
+    icon: "fa-light fa-eye",
+    text: "Расшифровка",
+    checkbox: true,
+    localStorageKey: "decode",
+    defaultValue: true,
+    onClick: () => {
+      decode = !decode;
+      localStorage.setItem("decode", JSON.stringify(decode));
     },
   },
 ];
